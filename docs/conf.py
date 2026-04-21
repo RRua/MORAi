@@ -30,6 +30,7 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", ".venv", "Thumbs.db", ".DS_Store"]
 
 # HTML output
+html_baseurl = "https://sanadlab.github.io/MORAl/"
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 html_theme_options = {
