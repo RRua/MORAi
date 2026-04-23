@@ -281,20 +281,285 @@ The adapter handles all 8 Java primitive types plus object/array types:
 
 For 2-slot types (`long`, `double`), `DUP2` is used instead of `DUP`.
 
-### @CacheInvalidate Methods
+### @CacheInvalidate Methods — Legacy Form
 
-The `InvalidateMethodAdapter` injects a single call before each return:
+The `InvalidateMethodAdapter` injects one of two calls before each return, depending on the annotation's `value`.
 
+#### Bare `@CacheInvalidate` → `invalidateAll()`
+
+**Source:**
 ```java
-// Injected before each RETURN in @CacheInvalidate methods:
-if (this.__memoCacheManager != null) {
-    this.__memoCacheManager.invalidateAll();
+@CacheInvalidate
+public void reset() {
+    this.base = 0;
+}
+```
+
+**Transformed (equivalent Java):**
+```java
+public void reset() {
+    this.base = 0;
+    if (this.__memoCacheManager != null) {
+        this.__memoCacheManager.invalidateAll();
+    }
+}
+```
+
+#### `@CacheInvalidate({"name1", "name2"})` → `invalidate(String[])`
+
+The user-facing names are resolved at build time to the `name_XXXXX` methodKeys — that's how overloaded methods get flushed together.
+
+**Source:**
+```java
+@CacheInvalidate({"compute", "format"})
+public void setBase(int newBase) {
+    this.base = newBase;
+}
+```
+
+**Transformed:**
+```java
+public void setBase(int newBase) {
+    this.base = newBase;
+    if (this.__memoCacheManager != null) {
+        this.__memoCacheManager.invalidate(new String[]{
+            "compute_297da",     // all overloads of compute(...)
+            "compute_c71de",
+            "format_b8a01"
+        });
+    }
 }
 ```
 
 The null check handles the edge case where `@CacheInvalidate` appears on a class with no `@Memoize` methods (the manager field would be uninitialized).
 
-Exception paths (`ATHROW`) do NOT trigger invalidation -- if a mutation throws, the state may not have changed.
+Exception paths (`ATHROW`) do NOT trigger invalidation — if a mutation throws, the state may not have changed.
+
+### @InvalidateCacheEntry Methods
+
+The `InvalidateEntryMethodAdapter` evicts exactly one row from one target cache. It boxes the enclosing-method parameters named by `keys` into an `Object[]` and calls `manager.invalidateEntry(methodKey, args)`. The runtime rebuilds the target's `CacheKeyWrapper` from `args` and removes that entry.
+
+**Source:**
+```java
+@Memoize
+public UserProfile loadProfile(int userId) { ... }
+
+@InvalidateCacheEntry(method = "loadProfile", keys = {0})
+public void updateProfile(int userId, String name) {
+    db.update(userId, name);
+}
+```
+
+**Transformed:**
+```java
+public void updateProfile(int userId, String name) {
+    db.update(userId, name);
+    if (this.__memoCacheManager != null) {
+        this.__memoCacheManager.invalidateEntry(
+            "loadProfile_297da",
+            new Object[]{ Integer.valueOf(userId) }
+        );
+    }
+}
+```
+
+Primitive parameters are auto-boxed to match the target cache's key shape. Out-of-range indices in `keys` are silently clamped at transform time so a typo doesn't crash the build — the resulting key simply misses at runtime.
+
+### @CacheInvalidate Methods — Structured `targets`
+
+When `@CacheInvalidate(targets = { @Invalidation(...), ... })` is used, `InvalidateMethodAdapter` emits one self-contained invalidation block per `@Invalidation` directive. Each block reloads the manager and null-guards independently. Legacy `value` (if also specified) fires first; structured directives follow in declared order.
+
+Three per-target modes exist. Below, each is shown side-by-side: source on the left, generated code on the right.
+
+#### Mode 1: `allEntries = true` (FLUSH)
+
+Same effect as legacy `@CacheInvalidate("method")`, but inside the structured list.
+
+**Source:**
+```java
+@Invalidation(method = "getDocumentCount", allEntries = true)
+```
+
+**Generated (per-target block):**
+```java
+if (this.__memoCacheManager != null) {
+    this.__memoCacheManager.invalidate(new String[]{ "getDocumentCount_b8a01" });
+}
+```
+
+#### Mode 2: `keys = {...}` (KEYS) — param-index keyed eviction
+
+Semantically identical to `@InvalidateCacheEntry`, embedded as one directive among others on the same mutator.
+
+**Source:**
+```java
+@Invalidation(method = "getDocument", keys = {0})
+public void updateDocument(int id, String content) { ... }
+```
+
+**Generated:**
+```java
+if (this.__memoCacheManager != null) {
+    this.__memoCacheManager.invalidateEntry(
+        "getDocument_297da",
+        new Object[]{ Integer.valueOf(id) }   // enclosing param at index 0, boxed
+    );
+}
+```
+
+#### Mode 3: `keyBuilder = "..."` (KEY_BUILDER) — helper-built keys
+
+The transform calls your named helper and forwards its return as the target's argument tuple. Two sub-paths depending on the helper's return type.
+
+**3a. Helper returns `Object[]` — passed through verbatim.**
+
+**Source:**
+```java
+@CacheInvalidate(targets = {
+    @Invalidation(method = "taggedByTenant",
+                  keyBuilder = "tenantTagKey",
+                  keyBuilderArgs = {0})
+})
+public void refreshTenantDoc(int docId) { ... }
+
+private Object[] tenantTagKey(int docId) {
+    return new Object[]{ currentTenantId, docId };  // reads instance field
+}
+```
+
+**Generated:**
+```java
+public void refreshTenantDoc(int docId) {
+    // ... original body ...
+    if (this.__memoCacheManager != null) {
+        this.__memoCacheManager.invalidateEntry(
+            "taggedByTenant_ab12c",
+            this.tenantTagKey(docId)   // Object[] return used as the args tuple
+        );
+    }
+}
+```
+
+**3b. Helper returns a scalar (or boxed primitive) — auto-wrapped into a one-element `Object[]`.**
+
+**Source:**
+```java
+@CacheInvalidate(targets = {
+    @Invalidation(method = "getDocument", keyBuilder = "docKey")
+})
+public void addDocument(Document doc) {
+    db.insert(doc);
+}
+
+private Object docKey(Document doc) {
+    return doc.id;   // scalar
+}
+```
+
+**Generated:**
+```java
+public void addDocument(Document doc) {
+    db.insert(doc);
+    if (this.__memoCacheManager != null) {
+        Object[] __key = new Object[1];
+        __key[0] = this.docKey(doc);   // auto-wrap
+        this.__memoCacheManager.invalidateEntry("getDocument_297da", __key);
+    }
+}
+```
+
+#### Default `keyBuilderArgs` auto-forwards
+
+When `keyBuilderArgs = {}` (the default) and the helper declares N parameters, the transform forwards the first N enclosing-method parameters in order. This lets `keyBuilder = "docKey"` "just work" without spelling out indices in the common "pass the args through" case.
+
+**Source:**
+```java
+@CacheInvalidate(targets = {
+    @Invalidation(method = "taggedByTenant", keyBuilder = "autoForwardKey")
+})
+public void reassignTag(int tenantId, int docId, String reason) { ... }
+
+private Object[] autoForwardKey(int tenantId, int docId) {
+    return new Object[]{ tenantId, docId };
+}
+```
+
+**Generated:**
+```java
+public void reassignTag(int tenantId, int docId, String reason) {
+    // ... original body ...
+    if (this.__memoCacheManager != null) {
+        // autoForwardKey has arity 2 → first 2 enclosing params forwarded.
+        // `reason` (arg index 2) is NOT forwarded.
+        this.__memoCacheManager.invalidateEntry(
+            "taggedByTenant_ab12c",
+            this.autoForwardKey(tenantId, docId)
+        );
+    }
+}
+```
+
+#### Helper visibility → invoke opcode
+
+The transform picks the right JVM invoke opcode based on the helper's access modifiers — this matters because `INVOKEVIRTUAL` is illegal on private methods per JVMS.
+
+| Helper modifier | Emitted opcode |
+|---|---|
+| `static` | `INVOKESTATIC` |
+| `private` (instance) | `INVOKESPECIAL` |
+| any other (instance) | `INVOKEVIRTUAL` |
+
+#### Heterogeneous directives on one mutator
+
+All three modes (and legacy `value`) can coexist. Each emits its own self-contained block in source order.
+
+**Source:**
+```java
+@CacheInvalidate(
+    value = {"legacyCache"},
+    targets = {
+        @Invalidation(method = "getDocumentCount", allEntries = true),
+        @Invalidation(method = "getDocument",     keys = {0}),
+        @Invalidation(method = "taggedByTenant",  keyBuilder = "tenantTagKey")
+    }
+)
+public void touchAllThree(int docId) { ... }
+```
+
+**Generated (outline):**
+```java
+public void touchAllThree(int docId) {
+    // ... original body ...
+
+    // Legacy value first
+    if (this.__memoCacheManager != null) {
+        this.__memoCacheManager.invalidate(new String[]{ "legacyCache_..." });
+    }
+
+    // Structured target 1: FLUSH
+    if (this.__memoCacheManager != null) {
+        this.__memoCacheManager.invalidate(new String[]{ "getDocumentCount_b8a01" });
+    }
+
+    // Structured target 2: KEYS
+    if (this.__memoCacheManager != null) {
+        this.__memoCacheManager.invalidateEntry(
+            "getDocument_297da",
+            new Object[]{ Integer.valueOf(docId) }
+        );
+    }
+
+    // Structured target 3: KEY_BUILDER
+    if (this.__memoCacheManager != null) {
+        this.__memoCacheManager.invalidateEntry(
+            "taggedByTenant_ab12c",
+            this.tenantTagKey(docId)
+        );
+    }
+}
+```
+
+Each block reloads the manager and null-guards independently. The cost is a few extra `GETFIELD` instructions per target — negligible since invalidation paths aren't hot.
 
 ## Verifying the Transformation
 

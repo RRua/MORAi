@@ -186,7 +186,21 @@
 <li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#primitive-type-handling">Primitive Type Handling</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#cacheinvalidate-methods">&#64;CacheInvalidate Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#cacheinvalidate-methods-legacy-form">&#64;CacheInvalidate Methods — Legacy Form</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#bare-cacheinvalidate-invalidateall">Bare <code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate</span></code> → <code class="docutils literal notranslate"><span class="pre">invalidateAll()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#cacheinvalidate-name1-name2-invalidate-string"><code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate({&quot;name1&quot;,</span> <span class="pre">&quot;name2&quot;})</span></code> → <code class="docutils literal notranslate"><span class="pre">invalidate(String[])</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#invalidatecacheentry-methods">&#64;InvalidateCacheEntry Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#cacheinvalidate-methods-structured-targets">&#64;CacheInvalidate Methods — Structured <code class="docutils literal notranslate"><span class="pre">targets</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#mode-1-allentries-true-flush">Mode 1: <code class="docutils literal notranslate"><span class="pre">allEntries</span> <span class="pre">=</span> <span class="pre">true</span></code> (FLUSH)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#mode-2-keys-keys-param-index-keyed-eviction">Mode 2: <code class="docutils literal notranslate"><span class="pre">keys</span> <span class="pre">=</span> <span class="pre">{...}</span></code> (KEYS) — param-index keyed eviction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#mode-3-keybuilder-key-builder-helper-built-keys">Mode 3: <code class="docutils literal notranslate"><span class="pre">keyBuilder</span> <span class="pre">=</span> <span class="pre">&quot;...&quot;</span></code> (KEY_BUILDER) — helper-built keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#default-keybuilderargs-auto-forwards">Default <code class="docutils literal notranslate"><span class="pre">keyBuilderArgs</span></code> auto-forwards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#helper-visibility-invoke-opcode">Helper visibility → invoke opcode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#heterogeneous-directives-on-one-mutator">Heterogeneous directives on one mutator</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#verifying-the-transformation">Verifying the Transformation</a></li>

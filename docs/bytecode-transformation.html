@@ -189,7 +189,21 @@
 <li class="toctree-l4"><a class="reference internal" href="#primitive-type-handling">Primitive Type Handling</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#cacheinvalidate-methods">&#64;CacheInvalidate Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cacheinvalidate-methods-legacy-form">&#64;CacheInvalidate Methods — Legacy Form</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bare-cacheinvalidate-invalidateall">Bare <code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate</span></code> → <code class="docutils literal notranslate"><span class="pre">invalidateAll()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cacheinvalidate-name1-name2-invalidate-string"><code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate({&quot;name1&quot;,</span> <span class="pre">&quot;name2&quot;})</span></code> → <code class="docutils literal notranslate"><span class="pre">invalidate(String[])</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#invalidatecacheentry-methods">&#64;InvalidateCacheEntry Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cacheinvalidate-methods-structured-targets">&#64;CacheInvalidate Methods — Structured <code class="docutils literal notranslate"><span class="pre">targets</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mode-1-allentries-true-flush">Mode 1: <code class="docutils literal notranslate"><span class="pre">allEntries</span> <span class="pre">=</span> <span class="pre">true</span></code> (FLUSH)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mode-2-keys-keys-param-index-keyed-eviction">Mode 2: <code class="docutils literal notranslate"><span class="pre">keys</span> <span class="pre">=</span> <span class="pre">{...}</span></code> (KEYS) — param-index keyed eviction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mode-3-keybuilder-key-builder-helper-built-keys">Mode 3: <code class="docutils literal notranslate"><span class="pre">keyBuilder</span> <span class="pre">=</span> <span class="pre">&quot;...&quot;</span></code> (KEY_BUILDER) — helper-built keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#default-keybuilderargs-auto-forwards">Default <code class="docutils literal notranslate"><span class="pre">keyBuilderArgs</span></code> auto-forwards</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#helper-visibility-invoke-opcode">Helper visibility → invoke opcode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#heterogeneous-directives-on-one-mutator">Heterogeneous directives on one mutator</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#verifying-the-transformation">Verifying the Transformation</a></li>
@@ -672,17 +686,273 @@ length()       → methodKey(&quot;length&quot;, &quot;()I&quot;)       → &quo
 <p>For 2-slot types (<code class="docutils literal notranslate"><span class="pre">long</span></code>, <code class="docutils literal notranslate"><span class="pre">double</span></code>), <code class="docutils literal notranslate"><span class="pre">DUP2</span></code> is used instead of <code class="docutils literal notranslate"><span class="pre">DUP</span></code>.</p>
 </section>
 </section>
-<section id="cacheinvalidate-methods">
-<h3>&#64;CacheInvalidate Methods<a class="headerlink" href="#cacheinvalidate-methods" title="Link to this heading"></a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">InvalidateMethodAdapter</span></code> injects a single call before each return:</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Injected before each RETURN in @CacheInvalidate methods:</span>
-<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateAll</span><span class="p">();</span>
+<section id="cacheinvalidate-methods-legacy-form">
+<h3>&#64;CacheInvalidate Methods — Legacy Form<a class="headerlink" href="#cacheinvalidate-methods-legacy-form" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">InvalidateMethodAdapter</span></code> injects one of two calls before each return, depending on the annotation’s <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+<section id="bare-cacheinvalidate-invalidateall">
+<h4>Bare <code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate</span></code> → <code class="docutils literal notranslate"><span class="pre">invalidateAll()</span></code><a class="headerlink" href="#bare-cacheinvalidate-invalidateall" title="Link to this heading"></a></h4>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@CacheInvalidate</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">reset</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Transformed (equivalent Java):</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">reset</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateAll</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="cacheinvalidate-name1-name2-invalidate-string">
+<h4><code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate({&quot;name1&quot;,</span> <span class="pre">&quot;name2&quot;})</span></code> → <code class="docutils literal notranslate"><span class="pre">invalidate(String[])</span></code><a class="headerlink" href="#cacheinvalidate-name1-name2-invalidate-string" title="Link to this heading"></a></h4>
+<p>The user-facing names are resolved at build time to the <code class="docutils literal notranslate"><span class="pre">name_XXXXX</span></code> methodKeys — that’s how overloaded methods get flushed together.</p>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@CacheInvalidate</span><span class="p">({</span><span class="s">&quot;compute&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;format&quot;</span><span class="p">})</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setBase</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">newBase</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newBase</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Transformed:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setBase</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">newBase</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newBase</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidate</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="o">[]</span><span class="p">{</span>
+<span class="w">            </span><span class="s">&quot;compute_297da&quot;</span><span class="p">,</span><span class="w">     </span><span class="c1">// all overloads of compute(...)</span>
+<span class="w">            </span><span class="s">&quot;compute_c71de&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s">&quot;format_b8a01&quot;</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>The null check handles the edge case where <code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate</span></code> appears on a class with no <code class="docutils literal notranslate"><span class="pre">&#64;Memoize</span></code> methods (the manager field would be uninitialized).</p>
-<p>Exception paths (<code class="docutils literal notranslate"><span class="pre">ATHROW</span></code>) do NOT trigger invalidation – if a mutation throws, the state may not have changed.</p>
+<p>Exception paths (<code class="docutils literal notranslate"><span class="pre">ATHROW</span></code>) do NOT trigger invalidation — if a mutation throws, the state may not have changed.</p>
+</section>
+</section>
+<section id="invalidatecacheentry-methods">
+<h3>&#64;InvalidateCacheEntry Methods<a class="headerlink" href="#invalidatecacheentry-methods" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">InvalidateEntryMethodAdapter</span></code> evicts exactly one row from one target cache. It boxes the enclosing-method parameters named by <code class="docutils literal notranslate"><span class="pre">keys</span></code> into an <code class="docutils literal notranslate"><span class="pre">Object[]</span></code> and calls <code class="docutils literal notranslate"><span class="pre">manager.invalidateEntry(methodKey,</span> <span class="pre">args)</span></code>. The runtime rebuilds the target’s <code class="docutils literal notranslate"><span class="pre">CacheKeyWrapper</span></code> from <code class="docutils literal notranslate"><span class="pre">args</span></code> and removes that entry.</p>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@Memoize</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">UserProfile</span><span class="w"> </span><span class="nf">loadProfile</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">userId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="nd">@InvalidateCacheEntry</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;loadProfile&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">})</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateProfile</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">userId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">db</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="n">userId</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Transformed:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateProfile</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">userId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">db</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="n">userId</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateEntry</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;loadProfile_297da&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Primitive parameters are auto-boxed to match the target cache’s key shape. Out-of-range indices in <code class="docutils literal notranslate"><span class="pre">keys</span></code> are silently clamped at transform time so a typo doesn’t crash the build — the resulting key simply misses at runtime.</p>
+</section>
+<section id="cacheinvalidate-methods-structured-targets">
+<h3>&#64;CacheInvalidate Methods — Structured <code class="docutils literal notranslate"><span class="pre">targets</span></code><a class="headerlink" href="#cacheinvalidate-methods-structured-targets" title="Link to this heading"></a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate(targets</span> <span class="pre">=</span> <span class="pre">{</span> <span class="pre">&#64;Invalidation(...),</span> <span class="pre">...</span> <span class="pre">})</span></code> is used, <code class="docutils literal notranslate"><span class="pre">InvalidateMethodAdapter</span></code> emits one self-contained invalidation block per <code class="docutils literal notranslate"><span class="pre">&#64;Invalidation</span></code> directive. Each block reloads the manager and null-guards independently. Legacy <code class="docutils literal notranslate"><span class="pre">value</span></code> (if also specified) fires first; structured directives follow in declared order.</p>
+<p>Three per-target modes exist. Below, each is shown side-by-side: source on the left, generated code on the right.</p>
+<section id="mode-1-allentries-true-flush">
+<h4>Mode 1: <code class="docutils literal notranslate"><span class="pre">allEntries</span> <span class="pre">=</span> <span class="pre">true</span></code> (FLUSH)<a class="headerlink" href="#mode-1-allentries-true-flush" title="Link to this heading"></a></h4>
+<p>Same effect as legacy <code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate(&quot;method&quot;)</span></code>, but inside the structured list.</p>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@Invalidation</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;getDocumentCount&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">allEntries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Generated (per-target block):</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidate</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="o">[]</span><span class="p">{</span><span class="w"> </span><span class="s">&quot;getDocumentCount_b8a01&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="mode-2-keys-keys-param-index-keyed-eviction">
+<h4>Mode 2: <code class="docutils literal notranslate"><span class="pre">keys</span> <span class="pre">=</span> <span class="pre">{...}</span></code> (KEYS) — param-index keyed eviction<a class="headerlink" href="#mode-2-keys-keys-param-index-keyed-eviction" title="Link to this heading"></a></h4>
+<p>Semantically identical to <code class="docutils literal notranslate"><span class="pre">&#64;InvalidateCacheEntry</span></code>, embedded as one directive among others on the same mutator.</p>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@Invalidation</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;getDocument&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">})</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateDocument</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">content</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Generated:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateEntry</span><span class="p">(</span>
+<span class="w">        </span><span class="s">&quot;getDocument_297da&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// enclosing param at index 0, boxed</span>
+<span class="w">    </span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="mode-3-keybuilder-key-builder-helper-built-keys">
+<h4>Mode 3: <code class="docutils literal notranslate"><span class="pre">keyBuilder</span> <span class="pre">=</span> <span class="pre">&quot;...&quot;</span></code> (KEY_BUILDER) — helper-built keys<a class="headerlink" href="#mode-3-keybuilder-key-builder-helper-built-keys" title="Link to this heading"></a></h4>
+<p>The transform calls your named helper and forwards its return as the target’s argument tuple. Two sub-paths depending on the helper’s return type.</p>
+<p><strong>3a. Helper returns <code class="docutils literal notranslate"><span class="pre">Object[]</span></code> — passed through verbatim.</strong></p>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@CacheInvalidate</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Invalidation</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;taggedByTenant&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">keyBuilder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;tenantTagKey&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">keyBuilderArgs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">})</span>
+<span class="p">})</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">refreshTenantDoc</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">docId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">private</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="nf">tenantTagKey</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">docId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="w"> </span><span class="n">currentTenantId</span><span class="p">,</span><span class="w"> </span><span class="n">docId</span><span class="w"> </span><span class="p">};</span><span class="w">  </span><span class="c1">// reads instance field</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Generated:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">refreshTenantDoc</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">docId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... original body ...</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateEntry</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;taggedByTenant_ab12c&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">tenantTagKey</span><span class="p">(</span><span class="n">docId</span><span class="p">)</span><span class="w">   </span><span class="c1">// Object[] return used as the args tuple</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>3b. Helper returns a scalar (or boxed primitive) — auto-wrapped into a one-element <code class="docutils literal notranslate"><span class="pre">Object[]</span></code>.</strong></p>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@CacheInvalidate</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Invalidation</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;getDocument&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">keyBuilder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;docKey&quot;</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addDocument</span><span class="p">(</span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">db</span><span class="p">.</span><span class="na">insert</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">private</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">docKey</span><span class="p">(</span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">doc</span><span class="p">.</span><span class="na">id</span><span class="p">;</span><span class="w">   </span><span class="c1">// scalar</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Generated:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addDocument</span><span class="p">(</span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">db</span><span class="p">.</span><span class="na">insert</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">__key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">;</span>
+<span class="w">        </span><span class="n">__key</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">docKey</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span><span class="w">   </span><span class="c1">// auto-wrap</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateEntry</span><span class="p">(</span><span class="s">&quot;getDocument_297da&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">__key</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="default-keybuilderargs-auto-forwards">
+<h4>Default <code class="docutils literal notranslate"><span class="pre">keyBuilderArgs</span></code> auto-forwards<a class="headerlink" href="#default-keybuilderargs-auto-forwards" title="Link to this heading"></a></h4>
+<p>When <code class="docutils literal notranslate"><span class="pre">keyBuilderArgs</span> <span class="pre">=</span> <span class="pre">{}</span></code> (the default) and the helper declares N parameters, the transform forwards the first N enclosing-method parameters in order. This lets <code class="docutils literal notranslate"><span class="pre">keyBuilder</span> <span class="pre">=</span> <span class="pre">&quot;docKey&quot;</span></code> “just work” without spelling out indices in the common “pass the args through” case.</p>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@CacheInvalidate</span><span class="p">(</span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Invalidation</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;taggedByTenant&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">keyBuilder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;autoForwardKey&quot;</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">reassignTag</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">tenantId</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">docId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">reason</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">private</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="nf">autoForwardKey</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">tenantId</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">docId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="w"> </span><span class="n">tenantId</span><span class="p">,</span><span class="w"> </span><span class="n">docId</span><span class="w"> </span><span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Generated:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">reassignTag</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">tenantId</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">docId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">reason</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... original body ...</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// autoForwardKey has arity 2 → first 2 enclosing params forwarded.</span>
+<span class="w">        </span><span class="c1">// `reason` (arg index 2) is NOT forwarded.</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateEntry</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;taggedByTenant_ab12c&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">autoForwardKey</span><span class="p">(</span><span class="n">tenantId</span><span class="p">,</span><span class="w"> </span><span class="n">docId</span><span class="p">)</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="helper-visibility-invoke-opcode">
+<h4>Helper visibility → invoke opcode<a class="headerlink" href="#helper-visibility-invoke-opcode" title="Link to this heading"></a></h4>
+<p>The transform picks the right JVM invoke opcode based on the helper’s access modifiers — this matters because <code class="docutils literal notranslate"><span class="pre">INVOKEVIRTUAL</span></code> is illegal on private methods per JVMS.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Helper modifier</p></th>
+<th class="head"><p>Emitted opcode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">static</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">INVOKESTATIC</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">private</span></code> (instance)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">INVOKESPECIAL</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>any other (instance)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">INVOKEVIRTUAL</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="heterogeneous-directives-on-one-mutator">
+<h4>Heterogeneous directives on one mutator<a class="headerlink" href="#heterogeneous-directives-on-one-mutator" title="Link to this heading"></a></h4>
+<p>All three modes (and legacy <code class="docutils literal notranslate"><span class="pre">value</span></code>) can coexist. Each emits its own self-contained block in source order.</p>
+<p><strong>Source:</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="nd">@CacheInvalidate</span><span class="p">(</span>
+<span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;legacyCache&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="n">targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nd">@Invalidation</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;getDocumentCount&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">allEntries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">),</span>
+<span class="w">        </span><span class="nd">@Invalidation</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;getDocument&quot;</span><span class="p">,</span><span class="w">     </span><span class="n">keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">}),</span>
+<span class="w">        </span><span class="nd">@Invalidation</span><span class="p">(</span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;taggedByTenant&quot;</span><span class="p">,</span><span class="w">  </span><span class="n">keyBuilder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;tenantTagKey&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">touchAllThree</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">docId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Generated (outline):</strong></p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">touchAllThree</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">docId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... original body ...</span>
+
+<span class="w">    </span><span class="c1">// Legacy value first</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidate</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="o">[]</span><span class="p">{</span><span class="w"> </span><span class="s">&quot;legacyCache_...&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Structured target 1: FLUSH</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidate</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="o">[]</span><span class="p">{</span><span class="w"> </span><span class="s">&quot;getDocumentCount_b8a01&quot;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Structured target 2: KEYS</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateEntry</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;getDocument_297da&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="n">docId</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Structured target 3: KEY_BUILDER</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">__memoCacheManager</span><span class="p">.</span><span class="na">invalidateEntry</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;taggedByTenant_ab12c&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">tenantTagKey</span><span class="p">(</span><span class="n">docId</span><span class="p">)</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Each block reloads the manager and null-guards independently. The cost is a few extra <code class="docutils literal notranslate"><span class="pre">GETFIELD</span></code> instructions per target — negligible since invalidation paths aren’t hot.</p>
+</section>
 </section>
 </section>
 <section id="verifying-the-transformation">
