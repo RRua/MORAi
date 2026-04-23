@@ -25,7 +25,15 @@ jobs:
           cache: pip
           cache-dependency-path: docs/requirements.txt
       - run: pip install -r docs/requirements.txt
+      - name: Compute base URL
+        id: baseurl
+        run: |
+          OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO_NAME="${{ github.event.repository.name }}"
+          echo "url=https://${OWNER_LC}.github.io/${REPO_NAME}/" >> $GITHUB_OUTPUT
       - run: sphinx-build -b html docs docs/_build/html
+        env:
+          SPHINX_HTML_BASEURL: ${{ steps.baseurl.outputs.url }}
       - run: touch docs/_build/html/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
