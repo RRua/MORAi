@@ -1,0 +1,16 @@
+\begin{table}[t]
+\caption{Summary of the three eviction policies (\lru, \fifo, \lfu) plus the unbounded mode shipped with MemoizeLib.}
+\label{tab:policies}
+\small
+\centering
+\begin{tabularx}{\columnwidth}{@{}l l X@{}}
+\toprule
+\textbf{Policy} & \textbf{Backing structure} & \textbf{When to use} \\
+\midrule
+\lru  & \code{LinkedHashMap} (access order)    & Temporal locality; recency-aware default. \\
+\fifo & \code{LinkedHashMap} (insertion order) & Cheapest hits; uniform key distribution. \\
+\lfu  & value / freq / bucket maps (O(1))      & Skewed workloads; Zipfian key distributions. \\
+NONE  & \code{ConcurrentHashMap}               & Bounded key space; no eviction required. \\
+\bottomrule
+\end{tabularx}
+\end{table}

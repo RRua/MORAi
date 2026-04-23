@@ -1,0 +1,133 @@
+% commands
+\renewcommand{\cite}{\citep}
+
+% constants
+\newcommand{\numAlgorithms}{10\xspace}
+\newcommand{\numPolicies}{4\xspace}
+\newcommand{\numBenchmarkSuites}{3\xspace}
+
+% Acronyms
+\newacronym{ast}{AST}{Abstract Syntax Tree}
+\newcommand{\abst}{\gls*{ast}\xspace}
+
+\newacronym{sdk}{SDK}{Standard Development Kit}
+\newcommand{\sdk}{\gls*{sdk}\xspace}
+
+\newacronym{agp}{AGP}{Android Gradle Plugin}
+\newcommand{\agp}{\gls*{agp}\xspace}
+
+\newacronym{ksp}{KSP}{Kotlin Symbol Processing}
+\newcommand{\ksp}{\gls*{ksp}\xspace}
+
+\newacronym{asm}{ASM}{ASM bytecode library}
+\newcommand{\asm}{\gls*{asm}\xspace}
+
+\newacronym{art}{ART}{Android RunTime}
+\newcommand{\art}{\gls*{art}\xspace}
+
+\newacronym{jit}{JIT}{Just-In-Time}
+\newcommand{\jit}{\gls*{jit}\xspace}
+
+\newacronym{aot}{AOT}{Ahead-of-Time}
+\newcommand{\aot}{\gls*{aot}\xspace}
+
+\newacronym{jvm}{JVM}{Java Virtual Machine}
+\newcommand{\jvm}{\gls*{jvm}\xspace}
+
+\newacronym{dce}{DCE}{Dead Code Elimination}
+\newcommand{\dce}{\gls*{dce}\xspace}
+
+\newacronym{api}{API}{Application Programming Interface}
+\newcommand{\api}{\gls*{api}\xspace}
+
+\newacronym{lru}{LRU}{Least Recently Used}
+\newcommand{\lru}{\gls*{lru}\xspace}
+
+\newacronym{lfu}{LFU}{Least Frequently Used}
+\newcommand{\lfu}{\gls*{lfu}\xspace}
+
+\newacronym{fifo}{FIFO}{First-In-First-Out}
+\newcommand{\fifo}{\gls*{fifo}\xspace}
+
+\newacronym{ttl}{TTL}{Time-To-Live}
+\newcommand{\ttl}{\gls*{ttl}\xspace}
+
+\newacronym{dp}{DP}{Dynamic Programming}
+\newcommand{\dynp}{\gls*{dp}\xspace}
+
+\newacronym[plural={LLMs}]{llm}{LLM}{Large Language Model}
+\newcommand{\llm}{\gls*{llm}\xspace}
+\newcommand{\llms}{\glspl*{llm}\xspace}
+
+\newacronym{odpm}{ODPM}{On-Device Power Monitor}
+\newcommand{\odpm}{\gls*{odpm}\xspace}
+
+\newacronym{apk}{APK}{Android Package}
+\newcommand{\apk}{\gls*{apk}\xspace}
+
+\newacronym[plural={PRs}]{pr}{PR}{Pull Request}
+\newcommand{\pr}{\gls*{pr}\xspace}
+
+\newacronym[plural={ROMs}]{rom}{ROM}{Read-Only Memory image}
+\newcommand{\rom}{\gls*{rom}\xspace}
+
+% research questions
+\newcommand{\RQ}[1]{\textbf{RQ#1}\xspace}
+
+% Round rectangle
+\newcommand{\roundbox}[1]{
+    \begin{center}
+        \begin{tikzpicture}
+            \node[draw=black, rectangle, rounded corners, inner sep=2mm](box){
+                \begin{minipage}{0.9\columnwidth}
+                    #1
+                \end{minipage}
+            };
+        \end{tikzpicture}
+    \end{center}
+}
+
+% tikz circled number
+\renewcommand{\textcircled}[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw=sh_comment,line width=0.4pt,inner sep=0.2pt,text=sh_comment] (char) {\small#1};}}
+\newcommand{\circnum}[1]{%
+  \tikz[baseline=(char.base)]{
+    \node[circle,draw=black,fill=black,text=white,line width=0.4pt,inner sep=0.2pt,outer sep=0pt] (char) {#1};
+  }%
+}
+
+% code
+\newcommand{\code}[1]{{\small\texttt{#1}}\xspace}
+
+% comment colors used by listings
+\definecolor{darkred}{rgb}{0.75,0,0}
+\definecolor{sh_comment}{rgb}{0.12, 0.38, 0.18}
+\definecolor{sh_keyword}{rgb}{0.37, 0.08, 0.25}
+\definecolor{sh_string}{rgb}{0.06, 0.10, 0.98}
+\definecolor{KWColor}{rgb}{0.5,0,0.67}
+\definecolor{CommentColor}{rgb}{0.15,0.5,0.15}
+\definecolor{lightgrey}{rgb}{0.8,0.8,0.8}
+
+\lstdefinestyle{Maple}{
+    showspaces=false,showtabs=false,tabsize=2,columns=flexible,
+    framesep=4pt,
+    showstringspaces=false,
+    backgroundcolor=\color{white},
+    breaklines=true,
+    breakatwhitespace=false,
+    xleftmargin=10pt,xrightmargin=0pt,
+    basicstyle=\scriptsize\ttfamily,
+    stringstyle=\color{sh_string},
+    keywordstyle=\color{sh_keyword}\bfseries,
+    commentstyle=\color{sh_comment}\itshape,
+    numberstyle=\tiny\color{CommentColor},
+    numbers=left,firstnumber=last,stepnumber=1,
+    lineskip=-0.0em,
+    escapeinside={/*@}{@*/},
+    numbersep=5pt,
+    captionpos=b,
+    upquote=true,
+}
+\lstset{style=Maple,language=Java}
+
+% PENDING marker for tables where a device campaign is still to be run.
+\newcommand{\pending}{\textit{pending}}

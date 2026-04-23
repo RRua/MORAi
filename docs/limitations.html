@@ -1,0 +1,584 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Limitations &mdash; MemoizeLib Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=fd10adb8"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="api-reference.html" />
+    <link rel="prev" title="FAQ" href="faq.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MemoizeLib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-1-add-the-plugin-to-your-settings">Step 1: Add the plugin to your settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-2-apply-the-plugin-and-add-dependencies">Step 2: Apply the plugin and add dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-4-build-and-verify">Step 4: Build and verify</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#quick-example">Quick Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#java">Java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#kotlin">Kotlin</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#jvm-non-android-projects">JVM (Non-Android) Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#kotlin-multiplatform">Kotlin Multiplatform</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#building-from-source">Building from Source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#module-structure">Module Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#dependency-graph">Dependency Graph</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#design-decisions">Design Decisions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#why-asm-bytecode-transformation">Why ASM Bytecode Transformation?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#why-two-pass-asm">Why Two-Pass ASM?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#why-inline-injection-not-trampoline">Why Inline Injection (Not Trampoline)?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#why-both-bulk-and-selective-invalidation">Why Both Bulk and Selective Invalidation?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="annotations.html">Annotations API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#memoize">&#64;Memoize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#parameters">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#usage-rules">Usage Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#cacheinvalidate">&#64;CacheInvalidate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#id1">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#full-invalidation-default">Full Invalidation (Default)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#selective-invalidation">Selective Invalidation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#when-to-use-which">When to Use Which</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#behavior">Behavior</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#invalidatecacheentry">&#64;InvalidateCacheEntry</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#id2">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#behaviour">Behaviour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#cachekey">&#64;CacheKey</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#id3">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#enums">Enums</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#cachescope">CacheScope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#evictionpolicy">EvictionPolicy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#threadsafety">ThreadSafety</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="runtime.html">Runtime Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#class-hierarchy">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#memocache-interface">MemoCache Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#lrumemocache">LruMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#unsynchronizedlrumemocache">UnsynchronizedLruMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#fifomemocache">FifoMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#lfumemocache">LfuMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#concurrentmemocache">ConcurrentMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#cachekeywrapper">CacheKeyWrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#memodispatcher">MemoDispatcher</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="runtime.html#methods-called-by-asm-bytecode">Methods Called by ASM Bytecode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="runtime.html#null-sentinel-pattern">Null Sentinel Pattern</a></li>
+<li class="toctree-l3"><a class="reference internal" href="runtime.html#ttl-time-to-live-support">TTL (Time-To-Live) Support</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="runtime.html#setup">Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="runtime.html#write-path">Write path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="runtime.html#read-path">Read path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="runtime.html#invalidation">Invalidation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="runtime.html#design-trade-offs">Design trade-offs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="runtime.html#known-limitations">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="runtime.html#auto-monitor-mode">Auto-Monitor Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="runtime.html#factory-methods-used-by-asm">Factory Methods (Used by ASM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="runtime.html#callable-based-api">Callable-Based API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#memocachemanager">MemoCacheManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#cachestats">CacheStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#memometrics">MemoMetrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#embedded-logging-memologger">Embedded Logging (MemoLogger)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="observability.html">Observability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#why-this-lives-inside-the-runtime">Why this lives inside the runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#log-levels">Log levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#enabling-and-routing">Enabling and routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="observability.html#sinks">Sinks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#what-gets-logged-at-each-level">What gets logged at each level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#timing-metrics">Timing metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#end-of-run-reports">End-of-run reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#performance-implications">Performance implications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bytecode-transformation.html">Build-Time Bytecode Transformation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#plugin-registration">Plugin Registration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#android-mode-agp-detected">Android Mode (AGP detected)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#jvm-mode-no-agp">JVM Mode (no AGP)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#class-filtering">Class Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#two-pass-transformation-strategy">Two-Pass Transformation Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#phase-1-annotation-scanning">Phase 1: Annotation Scanning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#phase-2-field-addition">Phase 2: Field Addition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#phase-3-constructor-patching">Phase 3: Constructor Patching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#phase-4-method-body-instrumentation">Phase 4: Method Body Instrumentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#memoize-methods">&#64;Memoize Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#at-method-entry-onmethodenter">At Method Entry (<code class="docutils literal notranslate"><span class="pre">onMethodEnter</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#before-method-return-onmethodexit">Before Method Return (<code class="docutils literal notranslate"><span class="pre">onMethodExit</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#primitive-type-handling">Primitive Type Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#cacheinvalidate-methods">&#64;CacheInvalidate Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#verifying-the-transformation">Verifying the Transformation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#basic-memoization">Basic Memoization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#simple-pure-function">Simple Pure Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#query-method-with-full-invalidation">Query Method with Full Invalidation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#selective-cache-invalidation">Selective Cache Invalidation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#method-overloading">Method Overloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#thread-safety-options">Thread Safety Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#ttl-time-to-live-expiry">TTL (Time-To-Live) Expiry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#kotlin-example">Kotlin Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#multiple-memoized-methods">Multiple Memoized Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#methods-returning-null">Methods Returning Null</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#zero-argument-methods">Zero-Argument Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#multi-argument-methods">Multi-Argument Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#auto-monitoring-mode">Auto-Monitoring Mode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#basic-auto-monitor">Basic Auto-Monitor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#custom-thresholds">Custom Thresholds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kotlin-auto-monitor">Kotlin Auto-Monitor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#annotated-demo-apps">Annotated Demo Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#java-android-demo">Java Android Demo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kotlin-android-demo">Kotlin Android Demo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#mixed-java-kotlin-android-demo">Mixed Java+Kotlin Android Demo</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#test-summary">Test Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#running-tests">Running Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#runtime-unit-tests">Runtime Unit Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#android-integration-tests">Android Integration Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#jvm-integration-tests">JVM Integration Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#kotlin-jvm-integration-tests">Kotlin JVM Integration Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#full-build-verification">Full Build Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#bytecode-inspection">Bytecode Inspection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#id1">Runtime Unit Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#cachekeywrappertest">CacheKeyWrapperTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#lrumemocachetest">LruMemoCacheTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#memodispatchertest">MemoDispatcherTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#memocachemanagertest">MemoCacheManagerTest</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#integration-tests">Integration Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#linkedlistmemotest">LinkedListMemoTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#calculatortest-jvm">CalculatorTest (JVM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#stringprocessortest-kotlin-jvm">StringProcessorTest (Kotlin JVM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#mathservicetest-kotlin-jvm">MathServiceTest (Kotlin JVM)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#general">General</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-does-this-library-do">What does this library do?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-is-this-different-from-spring-s-cacheable">How is this different from Spring’s &#64;Cacheable?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-on-kotlin-classes">Does it work on Kotlin classes?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-with-method-overloading">Does it work with method overloading?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#cache-behavior">Cache Behavior</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-are-cache-keys-constructed">How are cache keys constructed?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-happens-when-a-method-returns-null">What happens when a method returns null?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-happens-when-a-cacheinvalidate-method-throws">What happens when a &#64;CacheInvalidate method throws?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-i-invalidate-a-specific-method-s-cache-instead-of-all">Can I invalidate a specific method’s cache instead of all?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-happens-with-very-cheap-methods">What happens with very cheap methods?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#is-there-a-cache-size-limit-by-default">Is there a cache size limit by default?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#build-integration">Build &amp; Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-gradle-agp-version-is-required">What Gradle/AGP version is required?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-for-non-android-jvm-projects">Does it work for non-Android JVM projects?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-with-kotlin-multiplatform">Does it work with Kotlin Multiplatform?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-affect-build-time">Does it affect build time?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-with-r8-proguard">Does it work with R8/ProGuard?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-i-use-this-with-the-ksp-processor-only-no-asm">Can I use this with the KSP processor only (no ASM)?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#debugging">Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#why-do-i-see-extra-code-when-debugging-a-memoized-method">Why do I see extra code when debugging a memoized method?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-can-i-verify-the-transformation-worked">How can I verify the transformation worked?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-can-i-see-cache-hit-rates">How can I see cache hit rates?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#thread-safety">Thread Safety</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#is-the-cache-thread-safe">Is the cache thread-safe?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-cache-stampede-happen">Can cache stampede happen?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Limitations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#functional-limitations">Functional Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#instance-scope-only">Instance Scope Only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cachekey-field-extraction-not-implemented">&#64;CacheKey Field Extraction Not Implemented</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-ontrimmemory-integration">No onTrimMemory Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-proguard-r8-keep-rules-shipped">No ProGuard/R8 Keep Rules Shipped</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#technical-limitations">Technical Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#boxing-overhead">Boxing Overhead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-suspend-function-support">No Suspend Function Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debugging-complexity">Debugging Complexity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unit-test-coverage-gap">Unit Test Coverage Gap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exception-in-original-body-after-cache-miss">Exception in Original Body After Cache Miss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ttl-races-and-lru-drift">TTL Races and LRU Drift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#no-scan-resistance-in-lru-lfu">No Scan-Resistance in LRU / LFU</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-characteristics">Performance Characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#observability-related-limitations">Observability-Related Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#global-log-level">Global Log Level</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metric-heuristic">Metric Heuristic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reflection-based-logcat-sink">Reflection-Based Logcat Sink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timing-is-gated-on-logging">Timing Is Gated on Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#planned-future-enhancements">Planned Future Enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html#annotations">Annotations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-annotations">dev.memoize.annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#memoize-parameters">&#64;Memoize Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#cacheinvalidate-parameters">&#64;CacheInvalidate Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#enums">Enums</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html#runtime-classes">Runtime Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-runtime">dev.memoize.runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#memodispatcher-methods">MemoDispatcher Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#memocachemanager-methods">MemoCacheManager Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#cachestats-methods">CacheStats Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html#gradle-plugin">Gradle Plugin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#plugin-id">Plugin ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#behavior">Behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#injected-synthetic-fields">Injected Synthetic Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html#file-locations">File Locations</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MemoizeLib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Limitations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/limitations.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="limitations">
+<h1>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h1>
+<section id="functional-limitations">
+<h2>Functional Limitations<a class="headerlink" href="#functional-limitations" title="Link to this heading"></a></h2>
+<section id="instance-scope-only">
+<h3>Instance Scope Only<a class="headerlink" href="#instance-scope-only" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">CacheScope.CLASS</span></code> (static caches) is defined in the annotation API but <strong>not implemented</strong> in the ASM transformation. All caches are currently per-instance. Each object has its own independent cache for each memoized method.</p>
+<p><strong>Impact:</strong> Two <code class="docutils literal notranslate"><span class="pre">LinkedList</span></code> instances do not share cache entries, even for the same arguments. This is correct for methods that read instance state but wasteful for pure functions.</p>
+<p><strong>Workaround:</strong> Use a singleton pattern or dependency injection to share a single instance.</p>
+</section>
+<section id="cachekey-field-extraction-not-implemented">
+<h3>&#64;CacheKey Field Extraction Not Implemented<a class="headerlink" href="#cachekey-field-extraction-not-implemented" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;CacheKey(&quot;field&quot;)</span></code> annotation is defined in the API but the ASM transformation does not extract fields from parameters. All parameters are used in their entirety via <code class="docutils literal notranslate"><span class="pre">Arrays.deepHashCode</span></code>/<code class="docutils literal notranslate"><span class="pre">Arrays.deepEquals</span></code>.</p>
+<p><strong>Impact:</strong> For complex parameter objects, the entire object is used as the cache key. If two objects have different fields that aren’t relevant to the computation, they’ll be treated as different cache keys.</p>
+<p><strong>Workaround:</strong> Ensure parameter types have correct <code class="docutils literal notranslate"><span class="pre">hashCode()</span></code>/<code class="docutils literal notranslate"><span class="pre">equals()</span></code> implementations that consider only relevant fields. Use Kotlin <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">class</span></code> types.</p>
+</section>
+<section id="no-ontrimmemory-integration">
+<h3>No onTrimMemory Integration<a class="headerlink" href="#no-ontrimmemory-integration" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">MemoCacheManager</span></code> does not register for Android <code class="docutils literal notranslate"><span class="pre">ComponentCallbacks2.onTrimMemory()</span></code> callbacks. Caches are not automatically trimmed when the system is under memory pressure.</p>
+<p><strong>Impact:</strong> Cached data persists until explicitly invalidated or the process is killed.</p>
+<p><strong>Workaround:</strong> Call invalidation manually in your <code class="docutils literal notranslate"><span class="pre">Application.onTrimMemory()</span></code> or <code class="docutils literal notranslate"><span class="pre">Activity.onTrimMemory()</span></code>.</p>
+</section>
+<section id="no-proguard-r8-keep-rules-shipped">
+<h3>No ProGuard/R8 Keep Rules Shipped<a class="headerlink" href="#no-proguard-r8-keep-rules-shipped" title="Link to this heading"></a></h3>
+<p>Minified release builds may strip or rename runtime classes and synthetic fields, breaking the instrumentation.</p>
+<p><strong>Workaround:</strong> Add to your <code class="docutils literal notranslate"><span class="pre">proguard-rules.pro</span></code>:</p>
+<div class="highlight-proguard notranslate"><div class="highlight"><pre><span></span>-keep class dev.memoize.runtime.** { *; }
+-keepclassmembers class * {
+    private dev.memoize.runtime.MemoCacheManager __memoCacheManager;
+    private dev.memoize.runtime.MemoDispatcher __memoDispatcher_*;
+}
+</pre></div>
+</div>
+</section>
+</section>
+<section id="technical-limitations">
+<h2>Technical Limitations<a class="headerlink" href="#technical-limitations" title="Link to this heading"></a></h2>
+<section id="boxing-overhead">
+<h3>Boxing Overhead<a class="headerlink" href="#boxing-overhead" title="Link to this heading"></a></h3>
+<p>Every memoized call boxes primitive arguments into <code class="docutils literal notranslate"><span class="pre">Object[]</span></code> and the return value into <code class="docutils literal notranslate"><span class="pre">Object</span></code>. For <code class="docutils literal notranslate"><span class="pre">boolean</span> <span class="pre">search(int</span> <span class="pre">key)</span></code>:</p>
+<ul class="simple">
+<li><p><strong>Entry:</strong> <code class="docutils literal notranslate"><span class="pre">Integer.valueOf(key)</span></code> + <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">Object[1]</span></code> + <code class="docutils literal notranslate"><span class="pre">CacheKeyWrapper</span></code> allocation</p></li>
+<li><p><strong>Exit (miss):</strong> <code class="docutils literal notranslate"><span class="pre">Boolean.valueOf(result)</span></code> allocation</p></li>
+</ul>
+<p>This is negligible for expensive computations but measurable for very cheap methods (&lt; 100ns). Estimated per-call overhead: ~50-80ns for cache hit, ~80-120ns for cache miss.</p>
+</section>
+<section id="no-suspend-function-support">
+<h3>No Suspend Function Support<a class="headerlink" href="#no-suspend-function-support" title="Link to this heading"></a></h3>
+<p>Kotlin <code class="docutils literal notranslate"><span class="pre">suspend</span></code> functions compile to state machines at bytecode level. The ASM injection does not handle the complex bytecode patterns generated by the Kotlin coroutine compiler. Annotating a <code class="docutils literal notranslate"><span class="pre">suspend</span> <span class="pre">fun</span></code> with <code class="docutils literal notranslate"><span class="pre">&#64;Memoize</span></code> will likely produce incorrect bytecode.</p>
+</section>
+<section id="debugging-complexity">
+<h3>Debugging Complexity<a class="headerlink" href="#debugging-complexity" title="Link to this heading"></a></h3>
+<p>Breakpoints in memoized methods will first hit the injected cache-check bytecode. The source code does not match the executed bytecode. In a debugger:</p>
+<ul class="simple">
+<li><p>The method appears to start with unfamiliar variable assignments and comparisons.</p></li>
+<li><p>The actual method body starts after the cache-miss branch.</p></li>
+<li><p>Before each return, there’s injected cache-store code.</p></li>
+</ul>
+</section>
+<section id="unit-test-coverage-gap">
+<h3>Unit Test Coverage Gap<a class="headerlink" href="#unit-test-coverage-gap" title="Link to this heading"></a></h3>
+<p>Android unit tests (<code class="docutils literal notranslate"><span class="pre">testDebugUnitTest</span></code>) run against <strong>pre-transformation</strong> bytecode – the ASM transform only applies during APK packaging. This means:</p>
+<ul class="simple">
+<li><p>Unit tests validate source-level correctness but not memoization behavior.</p></li>
+<li><p>True end-to-end testing of caching requires either Android instrumented tests (on device/emulator) or a standalone JVM test that manually applies the ASM transformation.</p></li>
+</ul>
+<p>The runtime library tests (<code class="docutils literal notranslate"><span class="pre">MemoDispatcherTest</span></code>, etc.) cover the caching logic independently.</p>
+</section>
+<section id="exception-in-original-body-after-cache-miss">
+<h3>Exception in Original Body After Cache Miss<a class="headerlink" href="#exception-in-original-body-after-cache-miss" title="Link to this heading"></a></h3>
+<p>If the original method body throws an exception after the cache check passes (cache miss), the exception propagates normally. The cache is NOT populated (no partial/error caching). The <code class="docutils literal notranslate"><span class="pre">onMethodExit(ATHROW)</span></code> handler is explicitly skipped. This is correct behavior but means transient exceptions cause repeated recomputation.</p>
+</section>
+<section id="ttl-races-and-lru-drift">
+<h3>TTL Races and LRU Drift<a class="headerlink" href="#ttl-races-and-lru-drift" title="Link to this heading"></a></h3>
+<p>TTL is implemented as a parallel <code class="docutils literal notranslate"><span class="pre">timestamps</span></code> cache next to the value cache (see <a class="reference internal" href="runtime.html"><span class="std std-doc">Runtime Library: TTL (Time-To-Live) Support</span></a> for the full walkthrough). Two subtleties:</p>
+<ul class="simple">
+<li><p><strong>Non-atomic dual-map state.</strong> <code class="docutils literal notranslate"><span class="pre">cache.put</span></code> and <code class="docutils literal notranslate"><span class="pre">timestamps.put</span></code> are two separate calls. Under <code class="docutils literal notranslate"><span class="pre">ThreadSafety.CONCURRENT</span></code>, a reader can briefly observe a value with no timestamp (treated as “never expires”) or vice versa. This only matters at the exact moment of expiry.</p></li>
+<li><p><strong>Independent LRU orders.</strong> Both maps have their own access order under churn, so in rare cases the timestamp may be evicted while the value still sits in the value cache (or vice versa). The value then looks “never expires” until it itself is evicted.</p></li>
+</ul>
+<p>Fixing both cleanly would require a single <code class="docutils literal notranslate"><span class="pre">CacheEntry{value,</span> <span class="pre">writeTime}</span></code> map, at the cost of re-introducing per-entry allocation on the TTL-disabled hot path. The current trade-off favours the TTL-off case, which is the default.</p>
+</section>
+<section id="no-scan-resistance-in-lru-lfu">
+<h3>No Scan-Resistance in LRU / LFU<a class="headerlink" href="#no-scan-resistance-in-lru-lfu" title="Link to this heading"></a></h3>
+<p>A single full iteration over many keys pollutes both caches. LRU loses the hot set; LFU inflates every key’s frequency to 1 and then behaves like FIFO until the hot set rebuilds its frequency lead. If your workload has warmup scans, either use <code class="docutils literal notranslate"><span class="pre">&#64;Memoize(autoMonitor</span> <span class="pre">=</span> <span class="pre">true)</span></code> to detect the degradation or manually invalidate after the scan.</p>
+</section>
+</section>
+<section id="performance-characteristics">
+<h2>Performance Characteristics<a class="headerlink" href="#performance-characteristics" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Cache hit overhead, <code class="docutils literal notranslate"><span class="pre">LRU</span></code> (single <code class="docutils literal notranslate"><span class="pre">int</span></code> arg)</p></td>
+<td><p>~50-80 ns</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cache hit overhead, <code class="docutils literal notranslate"><span class="pre">FIFO</span></code> (single <code class="docutils literal notranslate"><span class="pre">int</span></code> arg)</p></td>
+<td><p>~35-60 ns (no access-order relink)</p></td>
+</tr>
+<tr class="row-even"><td><p>Cache hit overhead, <code class="docutils literal notranslate"><span class="pre">LFU</span></code> (single <code class="docutils literal notranslate"><span class="pre">int</span></code> arg)</p></td>
+<td><p>~70-110 ns (frequency bookkeeping)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cache miss overhead (compute + store)</p></td>
+<td><p>~80-120 ns (plus computation)</p></td>
+</tr>
+<tr class="row-even"><td><p>Single-entry invalidation (<code class="docutils literal notranslate"><span class="pre">&#64;InvalidateCacheEntry</span></code>)</p></td>
+<td><p>~30-50 ns (one key build + one <code class="docutils literal notranslate"><span class="pre">remove()</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cache invalidation (per dispatcher)</p></td>
+<td><p>~5-10 ns (<code class="docutils literal notranslate"><span class="pre">HashMap.clear()</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Memory per <code class="docutils literal notranslate"><span class="pre">MemoDispatcher</span></code></p></td>
+<td><p>~200 bytes base (+ <code class="docutils literal notranslate"><span class="pre">MemoMetrics</span></code> atomic counters ~64 bytes)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Memory per cached entry</p></td>
+<td><p>~80-120 bytes (key wrapper + boxed value + map node)</p></td>
+</tr>
+<tr class="row-even"><td><p>Build time impact</p></td>
+<td><p>&lt; 1 second for typical projects</p></td>
+</tr>
+<tr class="row-odd"><td><p>DEX method count impact</p></td>
+<td><p>~3-5 methods per memoized method</p></td>
+</tr>
+<tr class="row-even"><td><p>APK size impact</p></td>
+<td><p>~15 KB for runtime library</p></td>
+</tr>
+<tr class="row-odd"><td><p>Logging overhead at <code class="docutils literal notranslate"><span class="pre">LogLevel.OFF</span></code> (default)</p></td>
+<td><p>1 volatile read + 1 int compare per guarded call site; no allocation</p></td>
+</tr>
+<tr class="row-even"><td><p>Logging overhead at <code class="docutils literal notranslate"><span class="pre">LogLevel.INFO</span></code></p></td>
+<td><p>Adds 2 <code class="docutils literal notranslate"><span class="pre">System.nanoTime()</span></code> calls + 2 <code class="docutils literal notranslate"><span class="pre">AtomicLong</span></code> updates on every hit/miss</p></td>
+</tr>
+<tr class="row-odd"><td><p>Logging overhead at <code class="docutils literal notranslate"><span class="pre">LogLevel.DEBUG</span></code> / <code class="docutils literal notranslate"><span class="pre">TRACE</span></code></p></td>
+<td><p>Adds a string concat + sink write per miss (DEBUG) or per hit (TRACE); not suitable for production</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="observability-related-limitations">
+<h2>Observability-Related Limitations<a class="headerlink" href="#observability-related-limitations" title="Link to this heading"></a></h2>
+<section id="global-log-level">
+<h3>Global Log Level<a class="headerlink" href="#global-log-level" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">MemoLogger.setLevel(...)</span></code> flips a single process-wide <code class="docutils literal notranslate"><span class="pre">LogLevel</span></code>. You cannot
+enable verbose logging for one <code class="docutils literal notranslate"><span class="pre">&#64;Memoize</span></code> method while the rest stays silent.
+If you need per-method filtering, install a custom <code class="docutils literal notranslate"><span class="pre">LogSink</span></code> and pattern-match
+on the method name embedded in every log message.</p>
+</section>
+<section id="metric-heuristic">
+<h3>Metric Heuristic<a class="headerlink" href="#metric-heuristic" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">MemoMetrics.getEstimatedSavedNanos()</span></code> assumes the mean compute cost is
+representative of what each hit would have cost. For methods whose cost varies
+wildly with input size (e.g. recursive Fibonacci), treat the figure as a
+directional signal, not an exact measurement. <code class="docutils literal notranslate"><span class="pre">totalComputeNanos</span></code>,
+<code class="docutils literal notranslate"><span class="pre">computeSamples</span></code>, and the raw <code class="docutils literal notranslate"><span class="pre">CacheStats</span></code> counters are always available if
+you want to do your own analysis.</p>
+</section>
+<section id="reflection-based-logcat-sink">
+<h3>Reflection-Based Logcat Sink<a class="headerlink" href="#reflection-based-logcat-sink" title="Link to this heading"></a></h3>
+<p>The Android sink is bound via <code class="docutils literal notranslate"><span class="pre">Class.forName(&quot;android.util.Log&quot;)</span></code> so the
+runtime JAR doesn’t depend on the Android SDK. In aggressively obfuscated
+builds (R8 full mode) this may break; the fix is to install a custom
+<code class="docutils literal notranslate"><span class="pre">LogSink</span></code> explicitly or add a keep rule for <code class="docutils literal notranslate"><span class="pre">android.util.Log</span></code>.</p>
+</section>
+<section id="timing-is-gated-on-logging">
+<h3>Timing Is Gated on Logging<a class="headerlink" href="#timing-is-gated-on-logging" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">MemoMetrics</span></code> is only populated when <code class="docutils literal notranslate"><span class="pre">MemoLogger.isLoggable(INFO)</span></code> is true at
+the moment a dispatcher is invoked. This keeps the default (logging off) path
+allocation- and syscall-free, but means you cannot collect timing data <em>without</em>
+also enabling at least <code class="docutils literal notranslate"><span class="pre">INFO</span></code>-level log output. Both are typically wanted
+together during benchmarking, so this is deliberate rather than accidental.</p>
+</section>
+</section>
+<section id="planned-future-enhancements">
+<h2>Planned Future Enhancements<a class="headerlink" href="#planned-future-enhancements" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">CacheScope.CLASS</span></code> (static caches)</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">&#64;CacheKey</span></code> field extraction</p></li>
+<li><p>Bundle ProGuard/R8 keep rules with the library</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">onTrimMemory</span></code> integration for memory-pressure-aware eviction</p></li>
+<li><p>Maven plugin support (currently Gradle-only)</p></li>
+<li><p>Per-dispatcher log filtering (currently global)</p></li>
+<li><p>Decouple <code class="docutils literal notranslate"><span class="pre">MemoMetrics</span></code> from <code class="docutils literal notranslate"><span class="pre">MemoLogger.isLoggable(INFO)</span></code> so timing can be
+collected without enabling log output</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="faq.html" class="btn btn-neutral float-left" title="FAQ" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api-reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, NYU Abu Dhabi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

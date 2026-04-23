@@ -1,0 +1,837 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Runtime Library &mdash; MemoizeLib Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=fd10adb8"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Observability" href="observability.html" />
+    <link rel="prev" title="Annotations API" href="annotations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            MemoizeLib
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-1-add-the-plugin-to-your-settings">Step 1: Add the plugin to your settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-2-apply-the-plugin-and-add-dependencies">Step 2: Apply the plugin and add dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-4-build-and-verify">Step 4: Build and verify</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#quick-example">Quick Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#java">Java</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#kotlin">Kotlin</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#jvm-non-android-projects">JVM (Non-Android) Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#kotlin-multiplatform">Kotlin Multiplatform</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#building-from-source">Building from Source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#module-structure">Module Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#dependency-graph">Dependency Graph</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#design-decisions">Design Decisions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#why-asm-bytecode-transformation">Why ASM Bytecode Transformation?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#why-two-pass-asm">Why Two-Pass ASM?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#why-inline-injection-not-trampoline">Why Inline Injection (Not Trampoline)?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#why-both-bulk-and-selective-invalidation">Why Both Bulk and Selective Invalidation?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="annotations.html">Annotations API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#memoize">&#64;Memoize</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#parameters">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#usage-rules">Usage Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#cacheinvalidate">&#64;CacheInvalidate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#id1">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#full-invalidation-default">Full Invalidation (Default)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#selective-invalidation">Selective Invalidation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#when-to-use-which">When to Use Which</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#behavior">Behavior</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#invalidatecacheentry">&#64;InvalidateCacheEntry</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#id2">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#example">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#behaviour">Behaviour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#cachekey">&#64;CacheKey</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#id3">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html#enums">Enums</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#cachescope">CacheScope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#evictionpolicy">EvictionPolicy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="annotations.html#threadsafety">ThreadSafety</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Runtime Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#class-hierarchy">Class Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memocache-interface">MemoCache Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lrumemocache">LruMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unsynchronizedlrumemocache">UnsynchronizedLruMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fifomemocache">FifoMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lfumemocache">LfuMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#concurrentmemocache">ConcurrentMemoCache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cachekeywrapper">CacheKeyWrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memodispatcher">MemoDispatcher</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#methods-called-by-asm-bytecode">Methods Called by ASM Bytecode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#null-sentinel-pattern">Null Sentinel Pattern</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ttl-time-to-live-support">TTL (Time-To-Live) Support</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#write-path">Write path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#read-path">Read path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#invalidation">Invalidation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#design-trade-offs">Design trade-offs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#known-limitations">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#auto-monitor-mode">Auto-Monitor Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#factory-methods-used-by-asm">Factory Methods (Used by ASM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#callable-based-api">Callable-Based API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#memocachemanager">MemoCacheManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cachestats">CacheStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#memometrics">MemoMetrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#embedded-logging-memologger">Embedded Logging (MemoLogger)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="observability.html">Observability</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#why-this-lives-inside-the-runtime">Why this lives inside the runtime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#log-levels">Log levels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#enabling-and-routing">Enabling and routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="observability.html#sinks">Sinks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#what-gets-logged-at-each-level">What gets logged at each level</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#timing-metrics">Timing metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#end-of-run-reports">End-of-run reports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#performance-implications">Performance implications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observability.html#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bytecode-transformation.html">Build-Time Bytecode Transformation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#plugin-registration">Plugin Registration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#android-mode-agp-detected">Android Mode (AGP detected)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#jvm-mode-no-agp">JVM Mode (no AGP)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#class-filtering">Class Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#two-pass-transformation-strategy">Two-Pass Transformation Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#phase-1-annotation-scanning">Phase 1: Annotation Scanning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#phase-2-field-addition">Phase 2: Field Addition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#phase-3-constructor-patching">Phase 3: Constructor Patching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#phase-4-method-body-instrumentation">Phase 4: Method Body Instrumentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#memoize-methods">&#64;Memoize Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#at-method-entry-onmethodenter">At Method Entry (<code class="docutils literal notranslate"><span class="pre">onMethodEnter</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#before-method-return-onmethodexit">Before Method Return (<code class="docutils literal notranslate"><span class="pre">onMethodExit</span></code>)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bytecode-transformation.html#primitive-type-handling">Primitive Type Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bytecode-transformation.html#cacheinvalidate-methods">&#64;CacheInvalidate Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bytecode-transformation.html#verifying-the-transformation">Verifying the Transformation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#basic-memoization">Basic Memoization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#simple-pure-function">Simple Pure Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#query-method-with-full-invalidation">Query Method with Full Invalidation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#selective-cache-invalidation">Selective Cache Invalidation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#method-overloading">Method Overloading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#thread-safety-options">Thread Safety Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#ttl-time-to-live-expiry">TTL (Time-To-Live) Expiry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#kotlin-example">Kotlin Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#multiple-memoized-methods">Multiple Memoized Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#methods-returning-null">Methods Returning Null</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#zero-argument-methods">Zero-Argument Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#multi-argument-methods">Multi-Argument Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#auto-monitoring-mode">Auto-Monitoring Mode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#basic-auto-monitor">Basic Auto-Monitor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#custom-thresholds">Custom Thresholds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kotlin-auto-monitor">Kotlin Auto-Monitor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#annotated-demo-apps">Annotated Demo Apps</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#java-android-demo">Java Android Demo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#kotlin-android-demo">Kotlin Android Demo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="examples.html#mixed-java-kotlin-android-demo">Mixed Java+Kotlin Android Demo</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#test-summary">Test Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#running-tests">Running Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#runtime-unit-tests">Runtime Unit Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#android-integration-tests">Android Integration Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#jvm-integration-tests">JVM Integration Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#kotlin-jvm-integration-tests">Kotlin JVM Integration Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#full-build-verification">Full Build Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#bytecode-inspection">Bytecode Inspection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#id1">Runtime Unit Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#cachekeywrappertest">CacheKeyWrapperTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#lrumemocachetest">LruMemoCacheTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#memodispatchertest">MemoDispatcherTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#memocachemanagertest">MemoCacheManagerTest</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html#integration-tests">Integration Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#linkedlistmemotest">LinkedListMemoTest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#calculatortest-jvm">CalculatorTest (JVM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#stringprocessortest-kotlin-jvm">StringProcessorTest (Kotlin JVM)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="testing.html#mathservicetest-kotlin-jvm">MathServiceTest (Kotlin JVM)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#general">General</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-does-this-library-do">What does this library do?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-is-this-different-from-spring-s-cacheable">How is this different from Spring’s &#64;Cacheable?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-on-kotlin-classes">Does it work on Kotlin classes?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-with-method-overloading">Does it work with method overloading?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#cache-behavior">Cache Behavior</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-are-cache-keys-constructed">How are cache keys constructed?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-happens-when-a-method-returns-null">What happens when a method returns null?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-happens-when-a-cacheinvalidate-method-throws">What happens when a &#64;CacheInvalidate method throws?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-i-invalidate-a-specific-method-s-cache-instead-of-all">Can I invalidate a specific method’s cache instead of all?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-happens-with-very-cheap-methods">What happens with very cheap methods?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#is-there-a-cache-size-limit-by-default">Is there a cache size limit by default?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#build-integration">Build &amp; Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#what-gradle-agp-version-is-required">What Gradle/AGP version is required?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-for-non-android-jvm-projects">Does it work for non-Android JVM projects?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-with-kotlin-multiplatform">Does it work with Kotlin Multiplatform?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-affect-build-time">Does it affect build time?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#does-it-work-with-r8-proguard">Does it work with R8/ProGuard?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-i-use-this-with-the-ksp-processor-only-no-asm">Can I use this with the KSP processor only (no ASM)?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#debugging">Debugging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#why-do-i-see-extra-code-when-debugging-a-memoized-method">Why do I see extra code when debugging a memoized method?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-can-i-verify-the-transformation-worked">How can I verify the transformation worked?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#how-can-i-see-cache-hit-rates">How can I see cache hit rates?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#thread-safety">Thread Safety</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#is-the-cache-thread-safe">Is the cache thread-safe?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="faq.html#can-cache-stampede-happen">Can cache stampede happen?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="limitations.html">Limitations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="limitations.html#functional-limitations">Functional Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#instance-scope-only">Instance Scope Only</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#cachekey-field-extraction-not-implemented">&#64;CacheKey Field Extraction Not Implemented</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#no-ontrimmemory-integration">No onTrimMemory Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#no-proguard-r8-keep-rules-shipped">No ProGuard/R8 Keep Rules Shipped</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="limitations.html#technical-limitations">Technical Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#boxing-overhead">Boxing Overhead</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#no-suspend-function-support">No Suspend Function Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#debugging-complexity">Debugging Complexity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#unit-test-coverage-gap">Unit Test Coverage Gap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#exception-in-original-body-after-cache-miss">Exception in Original Body After Cache Miss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#ttl-races-and-lru-drift">TTL Races and LRU Drift</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#no-scan-resistance-in-lru-lfu">No Scan-Resistance in LRU / LFU</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="limitations.html#performance-characteristics">Performance Characteristics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="limitations.html#observability-related-limitations">Observability-Related Limitations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#global-log-level">Global Log Level</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#metric-heuristic">Metric Heuristic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#reflection-based-logcat-sink">Reflection-Based Logcat Sink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="limitations.html#timing-is-gated-on-logging">Timing Is Gated on Logging</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="limitations.html#planned-future-enhancements">Planned Future Enhancements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html#annotations">Annotations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-annotations">dev.memoize.annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#memoize-parameters">&#64;Memoize Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#cacheinvalidate-parameters">&#64;CacheInvalidate Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#enums">Enums</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html#runtime-classes">Runtime Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-runtime">dev.memoize.runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#memodispatcher-methods">MemoDispatcher Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#memocachemanager-methods">MemoCacheManager Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#cachestats-methods">CacheStats Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html#gradle-plugin">Gradle Plugin</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#plugin-id">Plugin ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#behavior">Behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#injected-synthetic-fields">Injected Synthetic Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html#file-locations">File Locations</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">MemoizeLib</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Runtime Library</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/runtime.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="runtime-library">
+<h1>Runtime Library<a class="headerlink" href="#runtime-library" title="Link to this heading"></a></h1>
+<p>The runtime library provides the cache infrastructure that ASM-injected bytecode calls into. All classes are in the <code class="docutils literal notranslate"><span class="pre">dev.memoize.runtime</span></code> package.</p>
+<p>Source: <a class="reference external" href="https://github.com"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/main/java/dev/memoize/runtime/</span></code></a></p>
+<section id="class-hierarchy">
+<h2>Class Hierarchy<a class="headerlink" href="#class-hierarchy" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>MemoCache&lt;K,V&gt;  (interface)
+├── LruMemoCache&lt;K,V&gt;               -- LinkedHashMap (access-order) + synchronized
+├── UnsynchronizedLruMemoCache&lt;K,V&gt;  -- LinkedHashMap (access-order), NO synchronization
+├── FifoMemoCache&lt;K,V&gt;              -- LinkedHashMap (insertion-order) + synchronized
+├── LfuMemoCache&lt;K,V&gt;               -- Frequency buckets (O(1) get/put/evict) + synchronized
+└── ConcurrentMemoCache&lt;K,V&gt;         -- ConcurrentHashMap, unbounded
+
+CacheKeyWrapper              -- Wraps Object[] as cache key
+MemoDispatcher               -- Per-method cache coordinator
+MemoCacheManager             -- Per-instance manager (bulk + selective invalidation)
+CacheStats                   -- Hit/miss/eviction counters
+MemoMetrics                  -- Per-dispatcher compute/lookup timing (opt-in)
+MemoLogger / LogLevel / LogSink -- Embedded observability facade
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="observability.html"><span class="std std-doc">Observability</span></a> for the logging and metrics subsystem in
+full, including performance trade-offs of each log level.</p>
+</section>
+<section id="memocache-interface">
+<h2>MemoCache Interface<a class="headerlink" href="#memocache-interface" title="Link to this heading"></a></h2>
+<p>The base cache contract. Three implementations are provided.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">MemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">V</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">);</span><span class="w">           </span><span class="c1">// Returns null if not present</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">clear</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="nf">size</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="lrumemocache">
+<h2>LruMemoCache<a class="headerlink" href="#lrumemocache" title="Link to this heading"></a></h2>
+<p>LRU (Least Recently Used) cache backed by <code class="docutils literal notranslate"><span class="pre">LinkedHashMap</span></code> with access-order iteration.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LruMemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Internal: access-order LinkedHashMap with removeEldestEntry override</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span><span class="w"> </span><span class="mf">0.75f</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nd">@Override</span>
+<span class="w">        </span><span class="kd">protected</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">removeEldestEntry</span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">eldest</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">maxSize</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Thread safety:</strong> All operations (<code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">put</span></code>, <code class="docutils literal notranslate"><span class="pre">remove</span></code>, <code class="docutils literal notranslate"><span class="pre">clear</span></code>, <code class="docutils literal notranslate"><span class="pre">size</span></code>) are <code class="docutils literal notranslate"><span class="pre">synchronized</span></code>.</p>
+<p><strong>Eviction:</strong> When <code class="docutils literal notranslate"><span class="pre">put()</span></code> causes size to exceed <code class="docutils literal notranslate"><span class="pre">maxSize</span></code>, the least recently accessed entry is automatically removed. If a <code class="docutils literal notranslate"><span class="pre">CacheStats</span></code> instance is provided, evictions are counted.</p>
+<p><strong>Time complexity:</strong> O(1) for get and put. Eviction is O(1) amortized (removing the head of the linked list).</p>
+<p><strong>Hot-path caveat:</strong> every <code class="docutils literal notranslate"><span class="pre">get()</span></code> re-links the accessed node to the tail of the access-order list. This is two pointer updates and a field write per hit. For hit-heavy workloads where locality is weak, <code class="docutils literal notranslate"><span class="pre">FifoMemoCache</span></code> skips the relink entirely and is measurably cheaper on the hit path.</p>
+</section>
+<section id="unsynchronizedlrumemocache">
+<h2>UnsynchronizedLruMemoCache<a class="headerlink" href="#unsynchronizedlrumemocache" title="Link to this heading"></a></h2>
+<p>LRU cache with <strong>no synchronization</strong>. Identical to <code class="docutils literal notranslate"><span class="pre">LruMemoCache</span></code> but without <code class="docutils literal notranslate"><span class="pre">synchronized</span></code> methods. Used when <code class="docutils literal notranslate"><span class="pre">threadSafety</span> <span class="pre">=</span> <span class="pre">ThreadSafety.NONE</span></code>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UnsynchronizedLruMemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Same LinkedHashMap + removeEldestEntry as LruMemoCache,</span>
+<span class="w">    </span><span class="c1">// but get/put/clear/size are NOT synchronized.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>When to use:</strong> Methods that are only called from a single thread (e.g., Android main thread, a single-threaded executor). Eliminates all synchronization overhead (~20-30ns saved per cache hit vs synchronized).</p>
+<p><strong>Risk:</strong> If called from multiple threads concurrently, results are undefined (data corruption, <code class="docutils literal notranslate"><span class="pre">ConcurrentModificationException</span></code>).</p>
+</section>
+<section id="fifomemocache">
+<h2>FifoMemoCache<a class="headerlink" href="#fifomemocache" title="Link to this heading"></a></h2>
+<p>FIFO cache backed by <code class="docutils literal notranslate"><span class="pre">LinkedHashMap</span></code> in <strong>insertion-order</strong> mode (<code class="docutils literal notranslate"><span class="pre">accessOrder=false</span></code>). Hits do <strong>not</strong> re-link the node, so the hot path is strictly cheaper than LRU.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">FifoMemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">cap</span><span class="p">,</span><span class="w"> </span><span class="mf">0.75f</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nd">@Override</span>
+<span class="w">        </span><span class="kd">protected</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">removeEldestEntry</span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">eldest</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">maxSize</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>When to use:</strong> your workload has little or no temporal locality, or you care about the tightest possible hit path. Examples: a pure deterministic function called with a uniform distribution of arguments; a memoized helper on the UI thread where every nanosecond counts.</p>
+<p><strong>When NOT to use:</strong> anything with a “hot set” of repeated keys where LRU’s age-aware eviction dominates. FIFO will happily evict a key that’s been hit 1000 times in favour of a one-shot newcomer.</p>
+<p><strong>Thread safety:</strong> <code class="docutils literal notranslate"><span class="pre">synchronized</span></code> methods. No unsynchronized variant is shipped.</p>
+<p><strong>Time complexity:</strong> O(1) for <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">put</span></code>, <code class="docutils literal notranslate"><span class="pre">remove</span></code>, and eviction.</p>
+</section>
+<section id="lfumemocache">
+<h2>LfuMemoCache<a class="headerlink" href="#lfumemocache" title="Link to this heading"></a></h2>
+<p>Least-Frequently-Used cache with <strong>O(1)</strong> <code class="docutils literal notranslate"><span class="pre">get</span></code> / <code class="docutils literal notranslate"><span class="pre">put</span></code> / <code class="docutils literal notranslate"><span class="pre">evict</span></code>, using the classic frequency-bucket layout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">values</span>   <span class="p">:</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="o">&gt;</span>             <span class="n">key</span> <span class="o">-&gt;</span> <span class="n">cached</span> <span class="n">value</span>
+<span class="n">freqs</span>    <span class="p">:</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span> <span class="n">Integer</span><span class="o">&gt;</span>       <span class="n">key</span> <span class="o">-&gt;</span> <span class="n">current</span> <span class="n">hit</span> <span class="n">count</span>
+<span class="n">buckets</span>  <span class="p">:</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">Integer</span><span class="p">,</span> <span class="n">LinkedHashSet</span><span class="o">&lt;</span><span class="n">K</span><span class="o">&gt;&gt;</span>    <span class="n">freq</span> <span class="o">-&gt;</span> <span class="n">keys</span> <span class="n">at</span> <span class="n">that</span> <span class="n">freq</span>
+<span class="n">minFreq</span>  <span class="p">:</span> <span class="nb">int</span>                       <span class="n">running</span> <span class="nb">min</span> <span class="k">for</span> <span class="n">O</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="n">eviction</span>
+</pre></div>
+</div>
+<p>Every <code class="docutils literal notranslate"><span class="pre">get</span></code> increments the key’s frequency and moves it to the next bucket. Every <code class="docutils literal notranslate"><span class="pre">put</span></code> that overflows the cache evicts the <strong>oldest</strong> key in the <code class="docutils literal notranslate"><span class="pre">minFreq</span></code> bucket (<code class="docutils literal notranslate"><span class="pre">LinkedHashSet</span></code> keeps insertion order so ties are broken oldest-first, exactly like LRU does for same-age entries). Because <code class="docutils literal notranslate"><span class="pre">minFreq</span></code> is tracked as the cache mutates, the eviction victim is found without scanning.</p>
+<p><strong>When to use:</strong> skewed / Zipfian access patterns where a small subset of arguments dominates the call distribution. Tag lookups, autocomplete prefixes, route resolution, dependency-graph queries, anything that obeys a power law. LFU’s hit rate on these workloads is materially better than LRU’s.</p>
+<p><strong>When NOT to use:</strong></p>
+<ul class="simple">
+<li><p><strong>Scan-heavy workloads.</strong> A single full iteration over many keys inflates everyone’s frequency to 1; the cache then behaves like FIFO with extra bookkeeping.</p></li>
+<li><p><strong>Short-lived caches with fast-changing hot sets.</strong> LFU has no aging term, so a key that was hot in the past can pin itself in the cache even after the workload has moved on.</p></li>
+<li><p><strong>Very small caches where bookkeeping overhead dominates.</strong> Three <code class="docutils literal notranslate"><span class="pre">HashMap</span></code>s + one <code class="docutils literal notranslate"><span class="pre">LinkedHashSet</span></code> per frequency is more memory and more cache-miss pressure than LRU/FIFO.</p></li>
+</ul>
+<p><strong>Thread safety:</strong> <code class="docutils literal notranslate"><span class="pre">synchronized</span></code> methods.</p>
+<p><strong>Time complexity:</strong> O(1) for every operation. Memory: roughly 3x the node count of LRU due to the per-frequency bucket structure.</p>
+</section>
+<section id="concurrentmemocache">
+<h2>ConcurrentMemoCache<a class="headerlink" href="#concurrentmemocache" title="Link to this heading"></a></h2>
+<p>Lock-free cache backed by <code class="docutils literal notranslate"><span class="pre">ConcurrentHashMap</span></code>. No automatic eviction.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ConcurrentMemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MemoCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Thread safety:</strong> Lock-free reads, bucket-level write locks (inherent to <code class="docutils literal notranslate"><span class="pre">ConcurrentHashMap</span></code>).</p>
+<p><strong>Use case:</strong> When you need unbounded caching or eviction is handled externally. Also used internally by <code class="docutils literal notranslate"><span class="pre">MemoDispatcher</span></code> for TTL timestamp storage.</p>
+</section>
+<section id="cachekeywrapper">
+<h2>CacheKeyWrapper<a class="headerlink" href="#cachekeywrapper" title="Link to this heading"></a></h2>
+<p>Immutable wrapper around <code class="docutils literal notranslate"><span class="pre">Object[]</span></code> that provides correct <code class="docutils literal notranslate"><span class="pre">hashCode()</span></code> and <code class="docutils literal notranslate"><span class="pre">equals()</span></code> for use as a cache key.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CacheKeyWrapper</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">CacheKeyWrapper</span><span class="w"> </span><span class="n">EMPTY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CacheKeyWrapper</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">hashCode</span><span class="p">;</span><span class="w">  </span><span class="c1">// Pre-computed in constructor</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">CacheKeyWrapper</span><span class="p">(</span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">args</span><span class="p">;</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">hashCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">deepHashCode</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">obj</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">obj</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">CacheKeyWrapper</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">deepEquals</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">args</span><span class="p">,</span><span class="w"> </span><span class="p">((</span><span class="n">CacheKeyWrapper</span><span class="p">)</span><span class="w"> </span><span class="n">obj</span><span class="p">).</span><span class="na">args</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Key design decisions:</strong></p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Arrays.deepHashCode</span></code> / <code class="docutils literal notranslate"><span class="pre">Arrays.deepEquals</span></code></strong>: Handles primitives (boxed), objects, nested arrays, and nulls uniformly.</p></li>
+<li><p><strong>Pre-computed hash</strong>: The hash is computed once in the constructor since the wrapper is immutable.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">EMPTY</span></code> singleton</strong>: Zero-argument methods use a shared instance to avoid allocation.</p></li>
+</ul>
+</section>
+<section id="memodispatcher">
+<h2>MemoDispatcher<a class="headerlink" href="#memodispatcher" title="Link to this heading"></a></h2>
+<p>The core class that ASM-injected bytecode calls. Each <code class="docutils literal notranslate"><span class="pre">&#64;Memoize</span></code>-annotated method gets its own <code class="docutils literal notranslate"><span class="pre">MemoDispatcher</span></code> instance, stored as a synthetic field on the class.</p>
+<section id="methods-called-by-asm-bytecode">
+<h3>Methods Called by ASM Bytecode<a class="headerlink" href="#methods-called-by-asm-bytecode" title="Link to this heading"></a></h3>
+<p>The ASM transformation injects calls to these methods at method entry and exit:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Called at method entry: build a key from boxed arguments</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">CacheKeyWrapper</span><span class="w"> </span><span class="nf">buildKey</span><span class="p">(</span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span>
+
+<span class="c1">// Called at method entry: check cache, returns value or null (miss)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">getIfCached</span><span class="p">(</span><span class="n">CacheKeyWrapper</span><span class="w"> </span><span class="n">key</span><span class="p">)</span>
+
+<span class="c1">// Called before method return: store result in cache</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">putInCache</span><span class="p">(</span><span class="n">CacheKeyWrapper</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">result</span><span class="p">)</span>
+
+<span class="c1">// Called to convert NULL_SENTINEL back to null</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">unwrap</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">cached</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="null-sentinel-pattern">
+<h3>Null Sentinel Pattern<a class="headerlink" href="#null-sentinel-pattern" title="Link to this heading"></a></h3>
+<p>A critical design challenge: distinguishing “cache has no entry” (miss) from “cache has null entry” (hit). The dispatcher uses a sentinel:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">NULL_SENTINEL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="p">();</span>
+
+<span class="c1">// Storing: null becomes NULL_SENTINEL</span>
+<span class="n">Object</span><span class="w"> </span><span class="n">toStore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">NULL_SENTINEL</span><span class="p">;</span>
+<span class="n">cache</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">toStore</span><span class="p">);</span>
+
+<span class="c1">// Reading: null from cache.get() means miss; non-null means hit</span>
+<span class="n">Object</span><span class="w"> </span><span class="n">cached</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cache</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cached</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">cached</span><span class="p">;</span><span class="w">       </span><span class="c1">// Caller calls unwrap() to convert sentinel back to null</span>
+<span class="p">}</span>
+<span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">             </span><span class="c1">// Cache miss</span>
+</pre></div>
+</div>
+</section>
+<section id="ttl-time-to-live-support">
+<h3>TTL (Time-To-Live) Support<a class="headerlink" href="#ttl-time-to-live-support" title="Link to this heading"></a></h3>
+<p>TTL is off by default (<code class="docutils literal notranslate"><span class="pre">expireAfterWrite</span> <span class="pre">=</span> <span class="pre">-1</span></code>) and implemented so it costs <strong>nothing</strong> at runtime until the user opts in. When enabled, each <code class="docutils literal notranslate"><span class="pre">MemoDispatcher</span></code> owns a <strong>parallel <code class="docutils literal notranslate"><span class="pre">timestamps</span></code> cache</strong> alongside its value cache, rather than wrapping every entry in a <code class="docutils literal notranslate"><span class="pre">{value,</span> <span class="pre">writeTime}</span></code> tuple. The parallel-map layout keeps the TTL-disabled hot path free of an extra allocation on hits.</p>
+<section id="setup">
+<h4>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h4>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">expireAfterWriteMs</span><span class="p">;</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">MemoCache</span><span class="o">&lt;</span><span class="n">CacheKeyWrapper</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">timestamps</span><span class="p">;</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">expireAfterWriteMs</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">timestamps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createCache</span><span class="p">(</span><span class="n">maxSize</span><span class="p">,</span><span class="w"> </span><span class="n">EvictionPolicy</span><span class="p">.</span><span class="na">LRU</span><span class="p">,</span><span class="w"> </span><span class="n">threadSafety</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">timestamps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The two caches are sized identically. When TTL is off, <code class="docutils literal notranslate"><span class="pre">timestamps</span> <span class="pre">==</span> <span class="pre">null</span></code> and every TTL-related code path is guarded by a single null-check.</p>
+</section>
+<section id="write-path">
+<h4>Write path<a class="headerlink" href="#write-path" title="Link to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">putInCache()</span></code> stores the value in <code class="docutils literal notranslate"><span class="pre">cache</span></code>, then stamps the timestamp:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">timestamps</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">timestamps</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Two things worth calling out:</p>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">nanoTime</span></code>, not <code class="docutils literal notranslate"><span class="pre">currentTimeMillis</span></code>.</strong> Monotonic. Not affected by NTP corrections or user clock tweaks – important on Android where wall-clock time can jump backwards.</p></li>
+<li><p><strong>“After write” semantics, not “after access.”</strong> Reads do not refresh the timestamp. The annotation is literally <code class="docutils literal notranslate"><span class="pre">expireAfterWrite</span></code>, mirroring Guava / Caffeine naming.</p></li>
+</ol>
+</section>
+<section id="read-path">
+<h4>Read path<a class="headerlink" href="#read-path" title="Link to this heading"></a></h4>
+<p>TTL is checked <strong>before</strong> the main value cache lookup:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">timestamps</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Long</span><span class="w"> </span><span class="n">writeTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">timestamps</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">writeTime</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">writeTime</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">elapsed</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">expireAfterWriteMs</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1_000_000L</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">cache</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">          </span><span class="c1">// drop expired value</span>
+<span class="w">            </span><span class="n">timestamps</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">     </span><span class="c1">// drop its timestamp</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stats</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">stats</span><span class="p">.</span><span class="na">recordMiss</span><span class="p">();</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">                </span><span class="c1">// treat as a miss</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Unit conversion is inline:</strong> <code class="docutils literal notranslate"><span class="pre">expireAfterWriteMs</span> <span class="pre">*</span> <span class="pre">1_000_000L</span></code> turns the annotation’s millisecond budget into nanoseconds so the compare matches <code class="docutils literal notranslate"><span class="pre">System.nanoTime()</span></code> units.</p></li>
+<li><p><strong>Lazy eviction.</strong> There is no background thread sweeping expired rows. An entry only dies the next time somebody asks for it. Consequence: an expired-but-never-queried entry keeps sitting in the LRU until it’s pushed out by capacity pressure. That’s deliberate – no scheduler, no timer threads, and it plays nicely with Android Doze.</p></li>
+<li><p><strong>Two-step eviction.</strong> Both the value and its timestamp are removed via <code class="docutils literal notranslate"><span class="pre">MemoCache.remove()</span></code>.</p></li>
+<li><p><strong>It counts as a miss</strong>, not a no-op: <code class="docutils literal notranslate"><span class="pre">stats.recordMiss()</span></code> fires so hit-rate math stays honest, and the caller falls through to recompute.</p></li>
+</ul>
+</section>
+<section id="invalidation">
+<h4>Invalidation<a class="headerlink" href="#invalidation" title="Link to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">invalidate()</span></code> clears both caches in lockstep:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">invalidate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">cache</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">timestamps</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">timestamps</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Auto-monitor’s cache-disable path does the same thing. If we cleared only one of them, the next lookup would see ghost state.</p>
+</section>
+<section id="design-trade-offs">
+<h4>Design trade-offs<a class="headerlink" href="#design-trade-offs" title="Link to this heading"></a></h4>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Decision</p></th>
+<th class="head"><p>Why</p></th>
+<th class="head"><p>Cost</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Parallel timestamp cache vs. per-entry wrapper</p></td>
+<td><p>Zero overhead when TTL is disabled (<code class="docutils literal notranslate"><span class="pre">timestamps</span> <span class="pre">==</span> <span class="pre">null</span></code> short-circuits)</p></td>
+<td><p>When enabled: 2x map lookups per hit and an extra <code class="docutils literal notranslate"><span class="pre">Long</span></code> allocation per miss</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lazy expiry (check-on-read) vs. background sweeper</p></td>
+<td><p>No threads, no timers, no wake locks; trivial lifecycle</p></td>
+<td><p>Expired entries occupy slots until queried or evicted by capacity</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nanoTime()</span></code> vs. <code class="docutils literal notranslate"><span class="pre">currentTimeMillis()</span></code></p></td>
+<td><p>Monotonic – immune to wall-clock jumps</p></td>
+<td><p>Cannot survive process restart; memoize has no persistent cache anyway</p></td>
+</tr>
+<tr class="row-odd"><td><p>Treat expiry as a cache miss</p></td>
+<td><p>Hit-rate math stays meaningful; caller falls through to compute + store</p></td>
+<td><p>None material</p></td>
+</tr>
+<tr class="row-even"><td><p>TTL timestamps always use <code class="docutils literal notranslate"><span class="pre">LRU</span></code> regardless of the value cache’s policy</p></td>
+<td><p>Keeps the parallel map bounded to <code class="docutils literal notranslate"><span class="pre">maxSize</span></code></p></td>
+<td><p>The two caches have independent LRU orders – rare under-churn drift (see below)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="known-limitations">
+<h4>Known limitations<a class="headerlink" href="#known-limitations" title="Link to this heading"></a></h4>
+<p>Worth flagging explicitly because they are subtle:</p>
+<ol class="arabic simple">
+<li><p><strong>Non-atomic dual-map state.</strong> <code class="docutils literal notranslate"><span class="pre">cache.put</span></code> and <code class="docutils literal notranslate"><span class="pre">timestamps.put</span></code> are two separate calls. Under concurrent access with <code class="docutils literal notranslate"><span class="pre">ThreadSafety.CONCURRENT</span></code> a reader can briefly observe a value without its timestamp (or vice versa). The read path handles the no-timestamp case by treating it as “never expires”, so a racing reader can read a stale value for one window around expiry. In practice this only matters at the exact moment of expiry.</p></li>
+<li><p><strong>LRU-drift between the two caches.</strong> Under heavy churn, the timestamp cache may evict key <code class="docutils literal notranslate"><span class="pre">K</span></code> while the value cache still has it (the value then looks “never expires” forever) or vice versa (value silently dropped). Rare but not provably correct.</p></li>
+<li><p><strong>No jitter.</strong> If 10 000 entries are written in the same millisecond during a warmup they all expire together, producing a synchronised thundering-herd recompute. No refresh-ahead or per-entry jitter is implemented.</p></li>
+<li><p><strong>Millisecond granularity with nanosecond arithmetic.</strong> <code class="docutils literal notranslate"><span class="pre">expireAfterWriteMs</span> <span class="pre">*</span> <span class="pre">1_000_000L</span></code> is done on a signed long. Fine for any realistic TTL (overflow at ~292 years) but worth a comment if <code class="docutils literal notranslate"><span class="pre">expireAfterWriteNanos</span></code> is ever exposed.</p></li>
+<li><p><strong>TTL check runs even on warm cache hits.</strong> Two map lookups per hit when TTL is enabled (<code class="docutils literal notranslate"><span class="pre">timestamps.get</span></code> then <code class="docutils literal notranslate"><span class="pre">cache.get</span></code>) – roughly doubles the steady-state hit cost vs. TTL-off.</p></li>
+</ol>
+<p>Addressing (1) and (2) cleanly would mean switching to a single map of <code class="docutils literal notranslate"><span class="pre">CacheEntry{value,</span> <span class="pre">writeTime}</span></code>, at the cost of re-introducing allocation overhead on the TTL-off fast path. That is a deliberate trade-off, not an oversight.</p>
+</section>
+</section>
+<section id="auto-monitor-mode">
+<h3>Auto-Monitor Mode<a class="headerlink" href="#auto-monitor-mode" title="Link to this heading"></a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">autoMonitor</span> <span class="pre">=</span> <span class="pre">true</span></code>, the dispatcher tracks hit/miss statistics (stats are enabled automatically, regardless of <code class="docutils literal notranslate"><span class="pre">recordStats</span></code>) and evaluates the hit rate after <code class="docutils literal notranslate"><span class="pre">monitorWindow</span></code> calls. If the hit rate is below <code class="docutils literal notranslate"><span class="pre">minHitRate</span></code>, the cache is disabled:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// In putInCache(), after storing the result:</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">autoMonitor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">stats</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">totalRequests</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats</span><span class="p">.</span><span class="na">getRequestCount</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">totalRequests</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">monitorWindow</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">hitRate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stats</span><span class="p">.</span><span class="na">getHitRate</span><span class="p">();</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">hitRate</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">minHitRate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">disabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">         </span><span class="c1">// Volatile flag</span>
+<span class="w">            </span><span class="n">cache</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span><span class="w">           </span><span class="c1">// Free memory</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">timestamps</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">timestamps</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When disabled:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">getIfCached()</span></code> immediately returns <code class="docutils literal notranslate"><span class="pre">null</span></code> (cache bypass)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">putInCache()</span></code> is a no-op (nothing stored)</p></li>
+<li><p>Cache memory is freed</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">disabled</span></code> field is <code class="docutils literal notranslate"><span class="pre">volatile</span></code> for thread-safe reads. The dispatcher can be re-enabled programmatically:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">reenable</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">disabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">stats</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">stats</span><span class="p">.</span><span class="na">reset</span><span class="p">();</span><span class="w">  </span><span class="c1">// Fresh monitoring window</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="factory-methods-used-by-asm">
+<h3>Factory Methods (Used by ASM)<a class="headerlink" href="#factory-methods-used-by-asm" title="Link to this heading"></a></h3>
+<p>The ASM-generated bytecode calls <code class="docutils literal notranslate"><span class="pre">MemoDispatcher.create()</span></code> to instantiate dispatchers. Two overloads exist:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Standard (6 params): used when autoMonitor = false</span>
+<span class="n">MemoDispatcher</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;search_297da&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1L</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;LRU&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;CONCURRENT&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span>
+
+<span class="c1">// Extended (9 params): used when autoMonitor = true</span>
+<span class="n">MemoDispatcher</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="s">&quot;fib_a3b2c&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1L</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;LRU&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;CONCURRENT&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                       </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">);</span>
+<span class="c1">//                     autoMonitor, minHitRate, monitorWindow</span>
+</pre></div>
+</div>
+<p>These factories take string names for enums (avoiding complex <code class="docutils literal notranslate"><span class="pre">GETSTATIC</span></code> bytecode for enum constants) and delegate to the full constructor after parsing.</p>
+</section>
+<section id="callable-based-api">
+<h3>Callable-Based API<a class="headerlink" href="#callable-based-api" title="Link to this heading"></a></h3>
+<p>For direct use without ASM (e.g., in tests), the dispatcher also supports a <code class="docutils literal notranslate"><span class="pre">Callable</span></code>-based API:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w"> </span><span class="n">Callable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">compute</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">CacheKeyWrapper</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">buildKey</span><span class="p">(</span><span class="n">args</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Object</span><span class="w"> </span><span class="n">cached</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getIfCached</span><span class="p">(</span><span class="n">key</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cached</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">unwrap</span><span class="p">(</span><span class="n">cached</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Object</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">compute</span><span class="p">.</span><span class="na">call</span><span class="p">();</span>
+<span class="w">    </span><span class="n">putInCache</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="memocachemanager">
+<h2>MemoCacheManager<a class="headerlink" href="#memocachemanager" title="Link to this heading"></a></h2>
+<p>Manages all <code class="docutils literal notranslate"><span class="pre">MemoDispatcher</span></code> instances for a single object. The ASM transformation adds one <code class="docutils literal notranslate"><span class="pre">MemoCacheManager</span></code> field per instrumented class.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MemoCacheManager</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">MemoDispatcher</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dispatchers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ConcurrentHashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">methodName</span><span class="p">,</span><span class="w"> </span><span class="n">MemoDispatcher</span><span class="w"> </span><span class="n">dispatcher</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">dispatchers</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">methodName</span><span class="p">,</span><span class="w"> </span><span class="n">dispatcher</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Called by @CacheInvalidate (no args) -- clears ALL caches</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">invalidateAll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">MemoDispatcher</span><span class="w"> </span><span class="n">dispatcher</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">dispatchers</span><span class="p">.</span><span class="na">values</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">dispatcher</span><span class="p">.</span><span class="na">invalidate</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Called by @CacheInvalidate({&quot;search&quot;, &quot;length&quot;}) -- selective invalidation</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">invalidate</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">methodNames</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">methodNames</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">MemoDispatcher</span><span class="w"> </span><span class="n">dispatcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dispatchers</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dispatcher</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">dispatcher</span><span class="p">.</span><span class="na">invalidate</span><span class="p">();</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The manager supports two invalidation modes:</p>
+<ul class="simple">
+<li><p><strong>Full invalidation</strong> (<code class="docutils literal notranslate"><span class="pre">invalidateAll()</span></code>): Called when <code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate</span></code> has no arguments. Clears every registered cache. Safe default when you’re unsure which caches are affected.</p></li>
+<li><p><strong>Selective invalidation</strong> (<code class="docutils literal notranslate"><span class="pre">invalidate(String[])</span></code>): Called when <code class="docutils literal notranslate"><span class="pre">&#64;CacheInvalidate({&quot;method1&quot;,</span> <span class="pre">&quot;method2&quot;})</span></code> specifies target method names. Only the named caches are cleared; others remain intact. Unknown names are silently ignored.</p></li>
+</ul>
+<p><strong>Why a manager?</strong> When a class has multiple <code class="docutils literal notranslate"><span class="pre">&#64;Memoize</span></code> methods (e.g., <code class="docutils literal notranslate"><span class="pre">search</span></code>, <code class="docutils literal notranslate"><span class="pre">length</span></code>, <code class="docutils literal notranslate"><span class="pre">describe</span></code>), a mutating method needs a centralized way to invalidate the right caches. The manager holds all dispatchers and routes invalidation calls to the correct subset.</p>
+</section>
+<section id="cachestats">
+<h2>CacheStats<a class="headerlink" href="#cachestats" title="Link to this heading"></a></h2>
+<p>Thread-safe statistics tracker using <code class="docutils literal notranslate"><span class="pre">AtomicLong</span></code> counters. Only active when <code class="docutils literal notranslate"><span class="pre">&#64;Memoize(recordStats</span> <span class="pre">=</span> <span class="pre">true)</span></code>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CacheStats</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AtomicLong</span><span class="w"> </span><span class="n">hitCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AtomicLong</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AtomicLong</span><span class="w"> </span><span class="n">missCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AtomicLong</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AtomicLong</span><span class="w"> </span><span class="n">evictionCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AtomicLong</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">getHitRate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hitCount</span><span class="p">.</span><span class="na">get</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">missCount</span><span class="p">.</span><span class="na">get</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mf">0.0</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="n">hitCount</span><span class="p">.</span><span class="na">get</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// toString: &quot;CacheStats{hits=42, misses=8, evictions=2, hitRate=84.00%}&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">recordStats</span> <span class="pre">=</span> <span class="pre">false</span></code> (default), the <code class="docutils literal notranslate"><span class="pre">stats</span></code> field in <code class="docutils literal notranslate"><span class="pre">MemoDispatcher</span></code> is <code class="docutils literal notranslate"><span class="pre">null</span></code> and all stat-recording calls are skipped – zero overhead.</p>
+</section>
+<section id="memometrics">
+<h2>MemoMetrics<a class="headerlink" href="#memometrics" title="Link to this heading"></a></h2>
+<p>Per-dispatcher timing tracker that complements <code class="docutils literal notranslate"><span class="pre">CacheStats</span></code>. Every <code class="docutils literal notranslate"><span class="pre">MemoDispatcher</span></code>
+owns one, but the dispatcher only populates it when <code class="docutils literal notranslate"><span class="pre">MemoLogger</span></code> is set to
+<code class="docutils literal notranslate"><span class="pre">INFO</span></code> or higher – so the cost of timing is paid only when the user explicitly
+asks for observability. Stores:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">totalComputeNanos</span></code> / <code class="docutils literal notranslate"><span class="pre">computeSamples</span></code> – cumulative cost of misses</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">totalLookupNanos</span></code>  / <code class="docutils literal notranslate"><span class="pre">lookupSamples</span></code>  – cumulative cost of hits</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getMeanComputeNanos()</span></code> / <code class="docutils literal notranslate"><span class="pre">getMeanLookupNanos()</span></code> – derived averages</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">getEstimatedSavedNanos()</span></code> – <code class="docutils literal notranslate"><span class="pre">hits</span> <span class="pre">*</span> <span class="pre">meanCompute</span> <span class="pre">-</span> <span class="pre">totalLookup</span></code>, a rough
+“wall-clock savings” figure useful for benchmarking studies</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">MemoDispatcher.getMetrics()</span></code> exposes the instance; <code class="docutils literal notranslate"><span class="pre">MemoCacheManager.dumpReport()</span></code>
+renders every dispatcher’s stats + metrics as a multi-line report suitable for
+end-of-run logging. See <a class="reference internal" href="observability.html"><span class="std std-doc">Observability</span></a>.</p>
+</section>
+<section id="embedded-logging-memologger">
+<h2>Embedded Logging (MemoLogger)<a class="headerlink" href="#embedded-logging-memologger" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MemoDispatcher</span></code>’s hot paths (<code class="docutils literal notranslate"><span class="pre">invoke</span></code>, <code class="docutils literal notranslate"><span class="pre">getIfCached</span></code>, <code class="docutils literal notranslate"><span class="pre">putInCache</span></code>, <code class="docutils literal notranslate"><span class="pre">invalidate</span></code>,
+the constructor) carry <code class="docutils literal notranslate"><span class="pre">MemoLogger.isLoggable(level)</span></code> guard checks before any
+log-call argument is built. At the default <code class="docutils literal notranslate"><span class="pre">LogLevel.OFF</span></code> every guard
+short-circuits on a volatile-read + integer compare, so there is no allocation,
+no formatting, no sink dispatch – the logging hooks are effectively free
+unless the user opts in. Enabled levels produce dispatcher lifecycle events,
+miss/expire/hit events, auto-monitor disables, and compute exceptions.</p>
+<p>See <a class="reference internal" href="observability.html"><span class="std std-doc">Observability</span></a> for the full level table, sink wiring
+(auto-detected Android Logcat via reflection), and performance implications.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="annotations.html" class="btn btn-neutral float-left" title="Annotations API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="observability.html" class="btn btn-neutral float-right" title="Observability" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, NYU Abu Dhabi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

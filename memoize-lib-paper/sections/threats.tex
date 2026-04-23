@@ -1,0 +1,37 @@
+\section{Threats to Validity}\label{sec:threats}
+
+\subsection{Internal Validity}
+
+\paragraph{Runtime non-determinism.}
+\art's \jit compilation and garbage collection introduce per-iteration variance that can perturb the median. Jetpack Benchmark mitigates these sources of noise through warm-up iterations before every measurement block and by forcing \aot compilation of the target application; the harness builds against \code{testBuildType~=~release} with R8 enabled, so the measurements reflect production inlining, devirtualisation, and dead-code elimination. Computed values are consumed via a \code{volatile long} sink field to prevent R8's full mode from eliminating the measured calls through dead-code analysis.
+
+\paragraph{Correctness of the bytecode transform.}
+The memoization transform is implemented as an \asm class visitor that injects synthetic fields, patches every constructor, and rewrites every annotated method's entry and exit. A bug in the transform would manifest either as a verification error (\code{VerifyError}, \code{NoSuchFieldError}) or, more subtly, as a silently incorrect answer (for example, caching a value under the wrong key). We mitigate this risk in three ways. First, the runtime module ships with a JUnit test suite covering cache behaviour, the dispatcher state machine, \ttl expiry, every eviction policy, and single-row invalidation. Second, a plugin-level integration test compiles a small annotated class through the real \agp transform pipeline and exercises its methods on the \jvm. Third, the transform has been validated on a non-trivial real-world target---a Flappy Bird clone---to confirm that it preserves Java 11 \code{NestHost} and \code{NestMembers} attributes, which are required for nest-based access control across inner classes.
+
+\paragraph{Thermal throttling.}
+Sustained CPU activity can trigger thermal throttling on the Android device, artificially degrading later iterations within a benchmark run. We follow standard Jetpack Benchmark practice: \code{connectedReleaseAndroidTest} invokes every test as a separate instrumentation, screen brightness is held constant, and the device is operated without any other foreground app. Thermal effects cannot be eliminated entirely, but they apply uniformly across memoized and baseline rows within the same algorithm, so the per-algorithm speedup ratios are robust even when the absolute medians drift.
+
+\paragraph{Observability overhead.}
+\code{MemoLogger} is designed to short-circuit to a single \code{volatile} read and an integer comparison when disabled, and every runtime call site is guarded by an \code{isLoggable} check. All measurements are taken with \code{LogLevel.OFF}, so that logging contributes nothing to the reported medians. The timing metrics collected by \code{MemoMetrics} are gated on the log level being at \code{INFO} or higher, so they are also inactive during measurement. Statistics tracking (\code{CacheStats}) is decoupled from the log level and remains active, because its counts are required for the interpretation of \RQ{3}; it contributes only \code{AtomicLong} increments, which are negligible relative to the per-hit cost of every policy.
+
+\subsection{External Validity}
+
+\paragraph{Algorithm selection.}
+The benchmark exercises \numAlgorithms algorithms drawn from classical dynamic-programming exercises, all of which exhibit overlapping-subproblem structure and primitive-tupled keys. This matches the target use case for \code{@Memoize}. The results do not directly generalise to algorithms whose arguments carry substantial allocation weight (e.g., whole-tree or whole-map arguments, which cause \code{Arrays.deepHashCode} and \code{deepEquals} to traverse the argument recursively) or to methods with observable side effects, randomness, or I/O; memoization is inappropriate for the latter regardless of policy.
+
+\paragraph{Device specificity.}
+The harness is designed for Pixel-class devices running stock Android and has so far been statically validated only on non-device hardware (successful builds of both modules; signed release-mode test APKs). The absolute values in Tables~\ref{tab:results_speedup}--\ref{tab:results_hitrate} depend on the device's CPU generation, memory bandwidth, and thermal characteristics; however, the \emph{rankings} are expected to be robust across Pixel~8 and Pixel~10, consistent with the cross-device validation results reported in~\cite{empirical_rua}. Results obtained on vendor-customised ROMs or on emulators are known to be unreliable and are not claimed to follow the same rankings.
+
+\paragraph{Library version.}
+The benchmark measures a specific library version (0.1.0). Future versions may alter the dispatcher hot path or introduce new policies. The benchmark project is versioned alongside the library so that every reported measurement can be tied to a specific commit of both.
+
+\subsection{Construct Validity}
+
+\paragraph{Speedup as a metric for memoization impact.}
+We report the ratio of baseline median per-iteration time to memoized median per-iteration time. This metric captures the wall-clock benefit of caching but does not separately attribute the saving to compute avoidance versus allocation avoidance. On the \jvm, a lower allocation count indirectly reduces GC pressure and therefore wall-clock time, so the speedup ratio conflates the two effects. We mitigate this by also reporting per-iteration allocation counts through Jetpack Benchmark's built-in metric. Additionally, because every benchmark iteration constructs a fresh instance with a cold cache, the measurement includes the cost of the first (cold) call; a harness that amortised the cold warm-up across many iterations would produce even larger speedup ratios, but we deliberately measure the cold scenario because it corresponds to the cost path that a real caller would encounter on cold startup.
+
+\paragraph{Allocation count as a memory metric.}
+Allocation count is a proxy for memory overhead, not an exact measurement of resident-set size. It captures heap churn---and therefore GC pressure---but does not reflect object sizes, arena fragmentation, or the long-lived cache footprint itself. A direct measurement of the steady-state cache footprint is available through \code{MemoCacheManager.totalSize()} after warm-up, but this number is not reported in the present paper.
+
+\paragraph{Hot-path cost measured under no eviction.}
+The no-eviction rows of \RQ{2} isolate the per-operation implementation tax of each policy under the assumption that the cache never overflows. Real workloads combine hot-path cost with hit-rate effects under eviction pressure. We include \code{coinChange(0, 120)} with a seven-denomination set as an explicit overflow scenario, but a full sweep of \code{maxSize} values crossed with workload sizes is beyond the scope of this paper and is explicitly identified as future work in Section~\ref{sec:conclusions}.

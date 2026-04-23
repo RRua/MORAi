@@ -1,0 +1,22 @@
+\begin{table}[t]
+\caption{The ten benchmark algorithms, with the asymptotic complexity reduction delivered by a single \code{@Memoize} annotation.}
+\label{tab:algorithms}
+\small
+\centering
+\begin{tabularx}{\columnwidth}{@{}l l l@{}}
+\toprule
+\textbf{Algorithm} & \textbf{Naive} & \textbf{Memoized} \\
+\midrule
+Fibonacci                 & $O(\varphi^n)$          & $O(n)$ \\
+Ackermann                 & $\gg$ exponential       & O(reachable lattice) \\
+Catalan                   & $O(C_n)$                & $O(n^2)$ \\
+Binomial (Pascal)         & $O(2^n)$                & $O(n k)$ \\
+Integer partition         & exponential             & $O(n k)$ \\
+Edit distance             & $O(3^{n+m})$            & $O(n m)$ \\
+Longest common subseq.    & $O(2^{n+m})$            & $O(n m)$ \\
+Matrix chain              & $O(2^n)$                & $O(n^3)$ \\
+0/1 knapsack              & $O(2^n)$                & $O(n W)$ \\
+Coin change (ways)        & exponential             & $O(n A)$ \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,87 @@
+\section{Library Design}\label{sec:design}
+
+MemoizeLib follows a four-module layout that cleanly separates validation (compile time), transformation (build time), and execution (runtime). Each layer is described below, from the developer-visible annotation surface down to the runtime data structures that back the cache.
+
+\subsection{Annotation Surface}\label{sec:annotations}
+
+Three annotations compose the full developer-visible API.
+
+\begin{itemize}[leftmargin=*,nosep]
+    \item \code{@Memoize} marks a method whose result must be cached. Its parameters control cache capacity, eviction policy, thread-safety strategy, optional \ttl, optional auto-monitoring thresholds, and optional statistics collection. The target method must have a non-void return type; a \ksp processor~\cite{ksp} rejects the void case at compile time.
+    \item \code{@CacheInvalidate} marks a method whose successful completion must clear one or more caches on the enclosing instance. An empty argument list clears every cache; \code{@CacheInvalidate(\{"search"\})} clears the named method's cache selectively.
+    \item \code{@InvalidateCacheEntry} expresses single-row eviction. It names a target \code{@Memoize} method and identifies, by parameter index, which arguments of the enclosing (mutating) method must be used to reconstruct the row key. This annotation avoids the common waste of discarding hundreds of cached entries when only one has become stale.
+\end{itemize}
+
+Listing~\ref{lst:annotations} illustrates the three annotations in concert. \code{getTags} is the cache; \code{updateTags} evicts exactly one row keyed by its first parameter; \code{deleteAll} clears every cache on the instance.
+
+\begin{lstlisting}[caption={Annotations in concert.},label={lst:annotations}]
+public class TagStore {
+
+    @Memoize(maxSize = 1024, recordStats = true)
+    public List<Tag> getTags(int itemId) { /* expensive */ }
+
+    @InvalidateCacheEntry(method = "getTags", keys = {0})
+    public void updateTags(int itemId, List<Tag> tags) { /* ... */ }
+
+    @CacheInvalidate
+    public void deleteAll() { /* ... */ }
+}
+\end{lstlisting}
+
+\subsection{Module Graph}\label{sec:modules}
+
+The library is deliberately partitioned into four modules so that the developer-visible compile classpath is dependency-free.
+
+\begin{itemize}[leftmargin=*,nosep]
+    \item \code{memoize-annotations}---pure-Java annotations and enumerations. Zero transitive dependencies. This module is the only one placed on the user project's compile classpath.
+    \item \code{memoize-runtime}---the cache implementations (\code{LruMemoCache}, \code{FifoMemoCache}, \code{LfuMemoCache}, \code{ConcurrentMemoCache}), the per-method \code{MemoDispatcher} state machine, the per-instance \code{MemoCacheManager}, and the embedded observability layer (\code{MemoLogger}, \code{MemoMetrics}). Pure Java; depends only on \code{memoize-annotations}.
+    \item \code{memoize-ksp}---a \ksp processor~\cite{ksp} that runs at compile time to reject invalid annotation usage (void return types, abstract methods) without emitting any generated code.
+    \item \code{memoize-gradle-plugin}---the \agp-integrated plugin that installs the \asm class visitor. This module is the only place where \asm and the \agp API appear.
+\end{itemize}
+
+\subsection{Bytecode Transformation}\label{sec:transform}
+
+\code{@Memoize} is retained at class-file level (not at runtime) and is consumed by an \asm class visitor during the \code{transformClassesWithAsm} build task. The visitor executes a four-phase pipeline per input class.
+
+\begin{enumerate}[leftmargin=*,nosep]
+    \item \textbf{Phase~1: scan.} Every method carrying any of the three annotations is collected into an \asm \code{ClassNode} through the tree API. The visitor is constructed with its internal \code{ClassNode} as the downstream delegate (\code{ClassVisitor(api, classNode)}), which ensures that every visit method---including \code{visitNestHost}, \code{visitNestMember}, \code{visitPermittedSubclass}, and \code{visitRecordComponent}---is forwarded automatically. Forwarding the full set of attributes is necessary for correctness: an earlier iteration of the visitor manually overrode a subset of visit methods and silently dropped the Java 11 \code{NestHost} and \code{NestMembers} attributes, which broke nest-based access control~\cite{jep181} in any class whose inner class referenced a private field on its enclosing type. Section~\ref{sec:threats} discusses the correctness implications.
+    \item \textbf{Phase~2: fields.} The visitor injects a synthetic \code{MemoCacheManager} field into every instrumented class, plus one synthetic \code{MemoDispatcher} field per annotated method. Field names incorporate a five-hexadecimal-digit hash of the method descriptor, so overloaded methods receive distinct dispatchers without collision.
+    \item \textbf{Phase~3: constructors.} Before every \code{RETURN} instruction of every constructor, the visitor injects the instructions that instantiate the manager and register one dispatcher per annotated method. \code{MemoDispatcher.create} accepts enumeration values as \code{String} constants, avoiding the awkward \code{GETSTATIC} emission pattern that direct enum constant loading would require.
+    \item \textbf{Phase~4: method bodies.} The modified class node is written out, re-read with a second-pass \code{ClassVisitor}, and each annotated method is routed through a dedicated \code{AdviceAdapter}: \code{MemoizeMethodAdapter} for \code{@Memoize}, \code{InvalidateMethodAdapter} for \code{@CacheInvalidate}, and \code{InvalidateEntryMethodAdapter} for \code{@InvalidateCacheEntry}. Each adapter injects cache-check logic via \code{onMethodEnter} and cache-store logic via \code{onMethodExit}.
+\end{enumerate}
+
+For a \code{@Memoize}-annotated method, the injected entry sequence performs four operations. First, every argument is boxed into an \code{Object[]}. Second, \code{dispatcher.buildKey(args)} is invoked, returning a \code{CacheKeyWrapper} whose hash is pre-computed via \code{Arrays.deepHashCode}. Third, \code{dispatcher.getIfCached(key)} is invoked. Fourth, a non-null result is unboxed to the method's return type and returned immediately; a null result falls through to the original method body. The exit sequence, injected before every \code{xRETURN}, duplicates the return value, boxes it, stores it under the key via \code{dispatcher.putInCache(key, boxed)}, and returns unchanged. Exception paths (\code{onMethodExit(ATHROW)}) are deliberately skipped: when the original body raises, the cache is left untouched, which matches the intuitive contract that exceptions should not be memoised.
+
+\subsection{Runtime: Dispatcher State Machine}\label{sec:runtime}
+
+Every memoized method on every instance owns one \code{MemoDispatcher}. The dispatcher aggregates the value cache (one of four \code{MemoCache} implementations, described in Section~\ref{sec:policies}), an optional parallel \code{timestamps} cache allocated only when \ttl is enabled, an optional \code{CacheStats} tracker, an optional \code{MemoMetrics} tracker, and the auto-monitor configuration.
+
+The value cache uses the standard \emph{null-sentinel} pattern: a dedicated \code{NULL\_SENTINEL} object is stored in place of a genuine null return value so that a subsequent \code{get} can distinguish a cached null (hit) from a missing entry (miss) with a single reference comparison, without incurring the cost of a separate \code{containsKey} call.
+
+\subsubsection{Time-To-Live}\label{sec:ttl}
+
+The \ttl subsystem is implemented as a \emph{parallel timestamp cache} rather than as a per-entry wrapper. This design decision is motivated by the hot-path cost of the \ttl-\emph{disabled} case, which represents the typical configuration. When \ttl is disabled, the entire subsystem contributes exactly one null-check on the \code{timestamps} field; no additional allocation, boxing, or indirection is incurred. When \ttl is enabled (\code{expireAfterWrite~>~0}), each \code{putInCache} writes \code{System.nanoTime()} into the timestamp cache under the same key, and each \code{getIfCached} performs three additional steps: (\circnum{1})~look up the timestamp, skipping the expiry check if absent; (\circnum{2})~compute \code{elapsed~=~System.nanoTime()~-~writeTime}; (\circnum{3})~if \code{elapsed~>~expireAfterWriteMs~*~1\_000\_000}, remove the key from both caches, record a miss, and return null, causing the caller to fall through to recomputation.
+
+The subsystem uses \code{System.nanoTime} rather than \code{currentTimeMillis} because the former is monotonic and is not affected by wall-clock adjustments; on Android, where the system clock can jump backwards under NTP correction or manual user action, this property is essential for correctness. \ttl semantics are \emph{expire-after-write} rather than expire-after-access; reads do not refresh timestamps. Eviction is lazy: no background sweeper thread, timer, or wake-lock is used. An expired entry remains in the cache until the next lookup trips the expiry check, which keeps the library's lifecycle trivial and compatible with Android Doze.
+
+\subsubsection{Auto-Monitor}\label{sec:automon}
+
+Auto-monitor guards against memoizing methods whose argument cardinality is sufficiently high that caching adds overhead without saving computation. When \code{autoMonitor~=~true}, the dispatcher enables statistics tracking and, inside \code{putInCache}, evaluates the observed hit rate after every \code{monitorWindow} requests. If the observed rate falls below \code{minHitRate}, the dispatcher sets a \code{volatile} \code{disabled} flag, clears both caches, and from that point forward \code{getIfCached} returns null immediately and \code{putInCache} is a no-op. The flag can be cleared programmatically via \code{reenable()}, which also resets the statistics counters.
+
+\subsubsection{Embedded Observability}\label{sec:observability}
+
+The runtime ships with a \code{MemoLogger} static facade, a \code{LogLevel} enumeration (\code{OFF}, \code{ERROR}, \code{WARN}, \code{INFO}, \code{DEBUG}, \code{TRACE}), and a pluggable \code{LogSink} interface. Every call site in the runtime is guarded by an \code{isLoggable(level)} check, so that the default \code{OFF} state costs a single \code{volatile} read followed by an integer comparison; no allocation, string formatting, or sink dispatch occurs. At first use, the logger reflectively probes for \code{android.util.Log}; when present, log records are routed to Logcat under the tag \code{Memoize}, otherwise the sink falls back to \code{System.err}. The reflective probe is intentional: because the runtime module does not import \code{android.util.Log}, it links cleanly on non-Android \jvm targets, which is a prerequisite for the cross-platform design goal stated in Section~\ref{sec:intro}.
+
+A companion class, \code{MemoMetrics}, records per-dispatcher compute-on-miss and lookup-on-hit wall-clock durations when logging is at \code{INFO} or higher, and derives an estimated savings figure as the product of the hit count and the mean compute time. \code{MemoCacheManager.dumpReport()} renders a multi-line summary over every registered dispatcher, suitable for logging at the end of a benchmark run.
+
+\subsection{Eviction Policies}\label{sec:policies}
+
+MemoizeLib ships four \code{MemoCache} implementations. The implementation used by a given dispatcher is selected at construction time based on the \code{EvictionPolicy} enum value carried by the annotation.
+
+\paragraph{\lru.} \code{LruMemoCache} and its unsynchronised sibling \code{UnsynchronizedLruMemoCache} are backed by \code{LinkedHashMap} with \code{accessOrder=true}. Every hit re-links the accessed node to the tail of the access-order list; \code{removeEldestEntry} is overridden to evict the head when the cache size exceeds \code{maxSize}. The synchronised variant is selected for \code{ThreadSafety.CONCURRENT} and \code{ThreadSafety.SYNCHRONIZED}; the unsynchronised variant is selected for \code{ThreadSafety.NONE}, typically on single-threaded access paths (e.g.,\ Android's main thread), and saves approximately 20--30\,ns per hit by avoiding the monitor.
+
+\paragraph{\fifo.} \code{FifoMemoCache} is also backed by \code{LinkedHashMap}, but with \code{accessOrder=false} (insertion order). Hits do not re-link the accessed node, so the hot path is strictly cheaper than \lru---by two pointer updates and a field write per hit. The trade-off is that \fifo is blind to access frequency: a key hit 1000 times will be evicted without ceremony when a newly inserted key overflows the cache. \fifo is the preferred policy for workloads whose key distribution is close to uniform or whose locality signal is weak.
+
+\paragraph{\lfu.} \code{LfuMemoCache} implements the classical O(1) \lfu design of~\cite{pin2010lfu} through four co-operating data structures: a value map, a frequency map, a bucket map from frequency to \code{LinkedHashSet} of keys at that frequency, and a running \code{minFreq} counter. Every hit increments the frequency of the key and moves it between buckets; every eviction removes the oldest key from the \code{minFreq} bucket. Insertion-order iteration within a bucket ensures that same-frequency ties are broken in an \lru-like fashion. \lfu is the highest-cost policy per operation, but its hit rate on skewed workloads---precisely the workloads on which memoization earns the largest speedup---is correspondingly higher.
+
+\paragraph{Unbounded.} \code{ConcurrentMemoCache} is a thin wrapper over \code{ConcurrentHashMap} with no eviction. It is selected when the user specifies \code{eviction~=~EvictionPolicy.NONE} and, internally, as the backing structure for the \ttl timestamp cache whenever the user requests unbounded behaviour. The \ttl subsystem itself always uses a bounded \lru for the timestamp cache regardless of the value cache's policy, so that the parallel map cannot grow unbounded.

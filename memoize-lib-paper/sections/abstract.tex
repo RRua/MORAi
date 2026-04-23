@@ -1,0 +1,7 @@
+\begin{abstract}
+
+Memoization is a classical optimisation with a strong empirical track record, yet its mechanical application on the \jvm and Android remains error-prone: a correct implementation must simultaneously address cache placement, key construction, invalidation, thread-safety, and safe interaction with downstream code transformations. This correctness burden caps the reach of automated performance tools, which reliably \emph{identify} memoization candidates~\cite{immutator} but stop short of \emph{applying} the refactoring.
+
+We present \textbf{MemoizeLib}, an annotation-driven memoization library for Android and the plain \jvm. A single \code{@Memoize} annotation triggers a build-time bytecode transform that rewrites the annotated method in place, with no changes to call sites or types. The runtime implements three eviction policies (\lru, \fifo, \lfu) plus an unbounded mode, a parallel-map \ttl subsystem, an auto-monitor that disables unproductive caches at runtime, and an embedded observability layer whose disabled-state cost reduces to a single volatile read (derived from the code in Section~\ref{sec:tool}). A companion Jetpack Benchmark harness over ten overlapping-subproblem algorithms demonstrates multi-order-of-magnitude speedups and characterises the hot-path cost of each policy. MemoizeLib is released as an open, cross-platform research artefact intended as the downstream target for automated detectors and \llm-driven refactoring tools.
+
+\end{abstract}

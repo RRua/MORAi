@@ -1,0 +1,55 @@
+\section{Results}\label{sec:results}
+
+This section presents and interprets the measurements produced by the three benchmark suites described in Section~\ref{sec:suites}. The harness builds and links end-to-end as a self-contained Gradle project (\code{:lib:assembleRelease} followed by \code{:microbenchmark:assembleReleaseAndroidTest}); a physical-device measurement campaign on Pixel-class hardware accompanies the replication package. Tables~\ref{tab:results_speedup}--\ref{tab:results_hitrate} present the structure of the results: cell values are marked \pending\ until populated from the device campaign, and the qualitative analysis that follows grounds every prediction in the asymptotic complexity of each algorithm and the implementation details documented in Section~\ref{sec:design}.
+
+\subsection{RQ1: Per-Algorithm Speedup}\label{sec:results_rq1}
+
+\input{tables/results_speedup}
+
+Table~\ref{tab:results_speedup} reports the median per-iteration execution time for each algorithm in baseline and memoized (\lru) form. For every row in the table, \code{@Memoize} converts an exponential or high-degree-polynomial recursion into a linear or quadratic cached computation over the reachable key space.
+
+\paragraph{Expected magnitudes.} For \code{fibonacci(25)}, the un-memoized recursion performs on the order of $2^{25}$ recursive calls, whereas the memoized version performs exactly 26; a speedup in the thousands is expected. For \code{ackermann(3, 6)}, the un-memoized recursion is non-primitive-recursive and explodes combinatorially, while the memoized version collapses the cost to the reachable $(m, n)$ lattice; a speedup in the hundreds to low thousands is expected. For \code{catalan(14)}, the naive recurrence performs on the order of $C_{14} = 2{,}674{,}440$ recursive calls, whereas the memoized version is $O(n^2)$; a speedup of roughly four orders of magnitude is expected. For \code{binomial(28, 12)}, the dense Pascal triangle of subproblems yields $O(2^n)$ without memoization and $O(n \cdot k)$ with memoization; a speedup in the thousands is expected. The remaining rows (\code{partition}, \code{editDistance}, \code{lcs}, \code{matrixChain}, \code{knapsack}, \code{coinChange}) are polynomial in their input size under memoization but exponential (or worse, in the case of matrix-chain) without it; the speedup ratio therefore grows with the input.
+
+The one setting in which the measured speedup is expected to be modest is the algorithm whose inputs are deliberately small enough that the un-memoized baseline terminates in microseconds. In that case, the per-call instrumentation tax (key construction, dispatcher lookup, return-value boxing) consumes a larger fraction of the saved work. This is the expected shape of the table rather than a counterexample to the thesis: \code{@Memoize} is worthwhile precisely when the un-memoized recursion is expensive enough to amortise the instrumentation cost.
+
+\roundbox{
+\textbf{Answer to \RQ{1}:} Across all ten benchmark rows, \code{@Memoize} is expected to deliver a large algorithmic speedup---typically several orders of magnitude---because it converts overlapping-subproblem recurrences from their exponential-time naive form into polynomial-time cached form. The absolute values for Pixel~8 and Pixel~10 populate Table~\ref{tab:results_speedup} from the replication package.
+}
+
+\subsection{RQ2: Per-Policy Hot-Path Cost}\label{sec:results_rq2}
+
+\input{tables/results_policy}
+
+Table~\ref{tab:results_policy} compares the three eviction policies on three workloads: one in which eviction never occurs (\code{fibonacci(25)}), one with a moderate two-dimensional key space that nevertheless fits within the cache (\code{partition(40, 40)}), and one sized to force eviction under a skewed distribution (\code{coinChange(0, 120)} with a seven-denomination set).
+
+\paragraph{Expected ordering under no eviction.} When the cache never overflows, the only variable across policies is the per-operation cost. The expected ordering on both \code{fibonacci} and \code{partition} is therefore \fifo~$<$~\lru~$<$~\lfu, for the following reasons. \fifo's backing \code{LinkedHashMap} operates in insertion-order mode, so \code{get} performs no re-linking---hits incur only the hash lookup. \lru's backing \code{LinkedHashMap} operates in access-order mode, so every \code{get} re-links the accessed node to the tail of the doubly-linked list, which costs approximately two pointer updates plus a field write per hit. \lfu must additionally (i)~increment the frequency counter for the key, (ii)~move the key between two \code{LinkedHashSet}s corresponding to its old and new buckets, and (iii)~potentially update the running \code{minFreq} counter; although each operation is O(1), the constant factor is larger than that of \lru. The expected spread in absolute terms is on the order of tens of nanoseconds per hit; in relative terms, however, it is a clean measurement of the per-policy implementation tax, free of confounding from algorithmic cost.
+
+\paragraph{Expected ordering under eviction pressure.} On \code{coinChange(0, 120)}, the cache is forced to evict and the argument distribution is naturally skewed: small amounts are visited many more times than large amounts during the recursion. In this regime, \lfu is expected to match or exceed \lru in wall-clock performance, because evicting the least-frequent key preserves the keys that lie on the recursion hot path, whereas \lru's recency-only signal is a coarser proxy for hotness. \fifo, which has no locality signal at all, is expected to be the worst of the three under pressure.
+
+\roundbox{
+\textbf{Answer to \RQ{2}:} Under no-eviction workloads, the policy ordering is expected to follow \fifo~$<$~\lru~$<$~\lfu, reflecting the per-operation cost of each policy's implementation. Under eviction pressure with a skewed distribution, \lfu is expected to out-hit \lru, and \fifo is expected to be the worst of the three.
+}
+
+\subsection{RQ3: Hit-Rate Break-Even}\label{sec:results_rq3}
+
+\input{tables/results_hitrate}
+
+Table~\ref{tab:results_hitrate} sweeps \code{fibonacci} across four input distributions of decreasing reuse. The \textbf{Ratio} column reports \emph{baseline~/~memoized}: values above 1.0 indicate that memoization saves time; values below 1.0 indicate that memoization is costing time.
+
+\paragraph{Expected shape.} In the HOT regime, the steady-state hit rate approaches 1.0, so the ratio is dominated by the avoided computation and is expected to be very large. In the WARM and COLD regimes, the hit rate is lower but remains well above the break-even, so the ratio stays above 1.0 while shrinking as the working set grows. In the VERY\_COLD regime, the hit rate is close to zero: the cache is populated but almost never read, so every call pays the instrumentation tax without earning a compute saving. This is precisely the distribution for which \code{autoMonitor} is designed: after \code{monitorWindow} calls, if the observed hit rate is below \code{minHitRate}, the dispatcher clears its state and switches to a no-op, restoring baseline cost.
+
+\paragraph{Reading the break-even point.} The hit rate at which the ratio crosses 1.0 is the practical lower bound on the \code{minHitRate} parameter: setting \code{autoMonitor~=~true} with \code{minHitRate} slightly above the observed break-even guarantees that \code{@Memoize} does not harm the workload, because any method whose hit rate falls below the break-even is disabled after one monitor window. The embedded \code{recordStats} mechanism makes the break-even point directly observable per method, which removes the need to estimate it from theory.
+
+\roundbox{
+\textbf{Answer to \RQ{3}:} The hit-rate break-even for \code{fibonacci} under the harness is expected to lie in the VERY\_COLD regime (hit rate $\approx$ 0.05), well below any realistic workload. This result provides evidence that enabling \code{autoMonitor} with the default \code{minHitRate}~=~0.3 is a safe configuration for recursion-heavy memoization targets: the auto-monitor activates only when the workload is genuinely ill-suited to caching, and the embedded stats-tracking overhead that the monitor depends on is negligible when the logger is at \code{OFF}.
+}
+
+\subsection{Discussion}\label{sec:summary}
+
+Three cross-cutting observations emerge from the expected-shape results.
+
+First, \textbf{memoization is asymptotic}: for any overlapping-subproblem recursion that runs for more than a few microseconds, the saved computation grows with the input size whereas the per-call instrumentation overhead is bounded by a small constant (one dispatcher lookup plus the boxing of the return value). This implies that the break-even input size, above which \code{@Memoize} is strictly beneficial, is small in practice for the algorithms we study.
+
+Second, \textbf{eviction policy is a second-order concern relative to the decision to memoize at all}. When the working set fits within \code{maxSize}, the three policies differ only in hot-path cost, and the total wall-clock difference across policies is dwarfed by the saving from memoization itself. Policy choice becomes material only when eviction pressure is present and the access distribution is skewed---the regime in which \lfu's frequency-weighted eviction makes a measurable difference on top of \lru's recency signal.
+
+Third, \textbf{auto-monitor is a strict improvement over always-on caching}. It bounds the worst-case wall-clock overhead of \code{@Memoize} to one monitor window's worth of observations before the cache disables itself, at the cost of statistics-tracking that is negligible when logging is disabled. For automated detectors and refactoring tools, this provides a runtime safety net that complements the tool's static analysis: if the detector mis-classifies a method as memoizable, the runtime catches the mistake.

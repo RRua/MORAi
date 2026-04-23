@@ -1,0 +1,41 @@
+\section{MemoizeLib}\label{sec:tool}
+
+MemoizeLib is organised into four Gradle modules that separate the annotation surface, the runtime, compile-time validation, and the build-time bytecode transform. The developer-visible compile classpath consists of a single zero-dependency module; the runtime module has no transitive dependencies; and the \asm-based bytecode transform is delivered as a Gradle plugin that integrates with the Android Gradle Plugin on Android and with a standalone post-compilation task on the plain \jvm.
+
+\subsection{Annotation surface}\label{sec:annotations}
+
+Three annotations constitute the full developer-facing \api. Listing~\ref{lst:annotations} shows them used together on a typical mutable store.
+
+\begin{lstlisting}[caption={All three annotations used together.},label={lst:annotations}]
+public class TagStore {
+
+    @Memoize(maxSize = 1024, recordStats = true)
+    public List<Tag> getTags(int itemId) { /* expensive lookup */ }
+
+    @InvalidateCacheEntry(method = "getTags", keys = {0})
+    public void updateTags(int itemId, List<Tag> tags) { /* ... */ }
+
+    @CacheInvalidate
+    public void deleteAll() { /* ... */ }
+}
+\end{lstlisting}
+
+\code{@Memoize} marks a method whose result must be cached. Its parameters cover capacity (\code{maxSize}), eviction policy (\code{LRU}, \code{FIFO}, \code{LFU}, or unbounded), thread-safety strategy, optional \ttl (\code{expireAfterWrite}), optional auto-monitoring thresholds (\code{autoMonitor}, \code{minHitRate}), and optional statistics collection. \code{@CacheInvalidate} clears every cache on the enclosing instance (or a named subset when called with argument names). \code{@InvalidateCacheEntry} evicts a single row keyed by parameter indices of the enclosing method, so that fine-grained mutations do not waste the hundreds of unrelated entries around them. Every tunable is either numeric or enumerated, which makes the annotation surface directly settable from the output of an automated detector or an \llm-driven refactoring tool: an \code{@Memoize} patch is a few tokens to emit, whereas the equivalent hand-written caching wrapper is dozens of lines of boilerplate spanning field declaration, constructor patching, cache-check logic, cache-store logic, invalidation hooks, and thread-safety guards.
+
+\subsection{Bytecode transformation}\label{sec:transform}
+
+\code{@Memoize} is retained at class-file level and consumed by an \asm class visitor during the \code{transformClassesWithAsm} build task. The visitor executes a four-phase pipeline per class: (\circnum{1})~\emph{scan} annotated methods through the \asm tree API, with the \code{ClassNode} installed as a downstream delegate so that every visit method (including \code{visitNestHost}, \code{visitNestMember}, \code{visitPermittedSubclass}, and \code{visitRecordComponent}) is forwarded automatically---forwarding the full set of attributes is necessary to preserve Java 11 nest-based access control~\cite{jep181}; (\circnum{2})~\emph{inject fields}, adding one synthetic \code{MemoCacheManager} per instrumented class plus one synthetic \code{MemoDispatcher} per annotated method; (\circnum{3})~\emph{patch constructors} so that the manager and every dispatcher are instantiated before each \code{RETURN}; (\circnum{4})~\emph{rewrite method bodies} via \code{AdviceAdapter}s that inject cache-check logic at method entry and cache-store logic at every non-exceptional return. For \code{@Memoize} methods, the injected entry sequence boxes the arguments, builds a \code{CacheKeyWrapper} whose hash is pre-computed via \code{Arrays.deepHashCode}, calls \code{getIfCached}, and either unboxes the hit or falls through to the original body. Exception paths are deliberately skipped: a thrown result is not cached. Android projects register the class visitor through the \agp instrumentation \api; plain \jvm projects register an equivalent post-compilation transformer that operates on the project's class-output directory.
+
+\subsection{Runtime}\label{sec:runtime}
+
+\paragraph{Dispatcher state machine.} Every memoized method owns one \code{MemoDispatcher} per instance, aggregating a value cache, an optional parallel \code{timestamps} cache (only allocated when \ttl is enabled), a \code{CacheStats} tracker, a \code{MemoMetrics} tracker, and the auto-monitor configuration. The value cache uses the standard null-sentinel pattern so that cached nulls are distinguishable from missing entries through a single reference comparison.
+
+\paragraph{Eviction policies.} The runtime ships three eviction policies---\lru, \fifo, \lfu---plus an unbounded mode; one \code{MemoCache} implementation is selected at construction time based on the \code{eviction} parameter, and Table~\ref{tab:policies} summarises the options. \lru (\code{LinkedHashMap}, access order) re-links the accessed node on every hit; \fifo (\code{LinkedHashMap}, insertion order) does not, yielding a strictly cheaper hot path at the cost of ignoring locality; \lfu implements the classical O(1) design of~\cite{pin2010lfu} via four co-operating data structures (value map, frequency map, per-frequency bucket, running minimum counter), yielding the highest hit rate on skewed workloads; and an unbounded variant backed by \code{ConcurrentHashMap} serves the \code{NONE} case.
+
+\input{tables/policies}
+
+\paragraph{Time-to-live.} \ttl is implemented as a \emph{parallel timestamp cache} rather than a per-entry wrapper, so that the \ttl-disabled hot path incurs only one null-check on the \code{timestamps} field---no extra allocation, boxing, or indirection. When enabled, each \code{putInCache} writes \code{System.nanoTime()} into the parallel cache, and each \code{getIfCached} performs an inline expiry check; expired entries are removed lazily, without a background sweeper. Monotonic \code{nanoTime} is chosen over \code{currentTimeMillis} to remain immune to wall-clock adjustments on Android.
+
+\paragraph{Auto-monitor.} When \code{autoMonitor=true}, the dispatcher enables statistics tracking and evaluates the observed hit rate after every \code{monitorWindow} requests. If the rate falls below \code{minHitRate}, a \code{volatile} \code{disabled} flag is set and both caches are cleared; from that point, \code{getIfCached} returns null immediately and \code{putInCache} becomes a no-op. This mechanism bounds the worst-case runtime cost of a mis-classified memoization candidate---a critical safety net for automated refactoring tools.
+
+\paragraph{Observability.} A \code{MemoLogger} static facade, a six-level \code{LogLevel} enumeration, and a pluggable \code{LogSink} interface provide embedded logging without any third-party dependency. Every call site inside the runtime is guarded by an \code{isLoggable} check, so the default \code{OFF} state costs one \code{volatile} read and one integer comparison---effectively free. At first use, the sink reflectively probes for \code{android.util.Log} and, when present, routes records to Logcat under the tag \code{Memoize}; otherwise it falls back to \code{System.err}. The reflective probe is deliberate: because the runtime module does not \code{import android.util.Log}, it links cleanly on non-Android \jvm targets, which is a prerequisite for the cross-platform goal.

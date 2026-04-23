@@ -1,0 +1,16 @@
+\begin{table}[t]
+\caption{\code{OverheadBenchmark} results: per-call wrapper overhead of \code{@Memoize} at four controlled hit rates. The synthetic target (\code{expensiveCompute}) has a constant per-call compute cost, so the delta is attributable entirely to the library.}
+\label{tab:results_overhead}
+\small
+\centering
+\begin{tabularx}{\columnwidth}{@{}l r r r@{}}
+\toprule
+\textbf{Hit rate} & \textbf{Baseline (ns)} & \textbf{Memoized (ns)} & \textbf{$\Delta$/call (ns)} \\
+\midrule
+75\% & \pending & \pending & \pending \\
+50\% & \pending & \pending & \pending \\
+25\% & \pending & \pending & \pending \\
+0\%  & \pending & \pending & \pending \\
+\bottomrule
+\end{tabularx}
+\end{table}

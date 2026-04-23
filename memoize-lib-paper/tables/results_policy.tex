@@ -1,0 +1,15 @@
+\begin{table}[t]
+\caption{Steady-state hot-path cost of the three eviction policies on workloads that do not force eviction (Fibonacci, Partition) and one workload that does (Coin Change with a 7-denomination set). Median wall-clock per iteration. Values marked \pending\ are to be populated from device runs.}
+\label{tab:results_policy}
+\small
+\centering
+\begin{tabularx}{\columnwidth}{@{}l r r r@{}}
+\toprule
+\textbf{Workload} & \textbf{LRU (ns)} & \textbf{FIFO (ns)} & \textbf{LFU (ns)} \\
+\midrule
+\code{fibonacci(25)}      & \pending & \pending & \pending \\
+\code{partition(40,40)}   & \pending & \pending & \pending \\
+\code{coinChange(0,120)}  & \pending & \pending & \pending \\
+\bottomrule
+\end{tabularx}
+\end{table}

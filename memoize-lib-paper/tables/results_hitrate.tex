@@ -1,0 +1,16 @@
+\begin{table}[t]
+\caption{Hit-rate break-even sweep. Each row runs the same Fibonacci workload against a different input distribution, in both baseline and memoized (LRU) form. The ratio column is \textit{baseline/memoized}; values below 1.0 mean memoization is costing more than it saves.}
+\label{tab:results_hitrate}
+\small
+\centering
+\begin{tabularx}{\columnwidth}{@{}l r r r r@{}}
+\toprule
+\textbf{Distribution} & \textbf{Hit rate} & \textbf{Baseline (ns)} & \textbf{Memoized (ns)} & \textbf{Ratio} \\
+\midrule
+HOT       & $\approx$ 0.87 & \pending & \pending & \pending \\
+WARM      & $\approx$ 0.92 & \pending & \pending & \pending \\
+COLD      & $\approx$ 0.80 & \pending & \pending & \pending \\
+VERY\_COLD & $\approx$ 0.05 & \pending & \pending & \pending \\
+\bottomrule
+\end{tabularx}
+\end{table}
