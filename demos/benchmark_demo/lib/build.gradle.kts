@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
-    id("dev.memoize")
+    id("io.github.sanadlab")
 }
 
 android {
@@ -24,6 +24,6 @@ android {
 }
 
 dependencies {
-    api("dev.memoize:memoize-annotations:0.1.0")
-    api("dev.memoize:memoize-runtime:0.1.0")
+    api("io.github.sanadlab:memoize-annotations:0.1.0")
+    api("io.github.sanadlab:memoize-runtime:0.1.0")
 }

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Build-Time Bytecode Transformation &mdash; MemoizeLib Documentation</title>
+  <title>Build-Time Bytecode Transformation &mdash; MORAl Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -35,7 +35,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            MemoizeLib
+            MORAl
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,7 +52,15 @@
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html#installation">Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-1-add-the-plugin-to-your-settings">Step 1: Add the plugin to your settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-2-apply-the-plugin-and-add-dependencies">Step 2: Apply the plugin and add dependencies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#the-minimal-pattern">3.1   The minimal pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#selective-full-flush-across-multiple-methods">3.2   Selective full-flush across multiple methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#single-entry-eviction-when-you-know-which-row-changed">3.3   Single-entry eviction when you know which row changed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#heterogeneous-targets-on-one-mutator">3.4   Heterogeneous targets on one mutator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#key-builders-with-ambient-extra-state">3.5   Key builders with ambient / extra state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#legacy-and-structured-can-be-combined">3.6   Legacy and structured can be combined</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-4-build-and-verify">Step 4: Build and verify</a></li>
 </ul>
 </li>
@@ -313,14 +321,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api-reference.html#annotations">Annotations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-annotations">dev.memoize.annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#io-github-sanadlab-annotations">io.github.sanadlab.annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memoize-parameters">&#64;Memoize Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#cacheinvalidate-parameters">&#64;CacheInvalidate Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#enums">Enums</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api-reference.html#runtime-classes">Runtime Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-runtime">dev.memoize.runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#io-github-sanadlab-runtime">io.github.sanadlab.runtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memodispatcher-methods">MemoDispatcher Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memocachemanager-methods">MemoCacheManager Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#cachestats-methods">CacheStats Methods</a></li>
@@ -343,7 +351,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">MemoizeLib</a>
+          <a href="index.html">MORAl</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -364,7 +372,7 @@
   <section id="build-time-bytecode-transformation">
 <h1>Build-Time Bytecode Transformation<a class="headerlink" href="#build-time-bytecode-transformation" title="Link to this heading"></a></h1>
 <p>This is the core mechanism that makes <code class="docutils literal notranslate"><span class="pre">&#64;Memoize</span></code> transparent. The Gradle plugin transforms <code class="docutils literal notranslate"><span class="pre">.class</span></code> files at build time using ASM bytecode manipulation.</p>
-<p>Source: <a class="reference external" href="https://github.com"><code class="docutils literal notranslate"><span class="pre">memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/</span></code></a></p>
+<p>Source: <a class="reference external" href="https://github.com"><code class="docutils literal notranslate"><span class="pre">memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/</span></code></a></p>
 <section id="plugin-registration">
 <h2>Plugin Registration<a class="headerlink" href="#plugin-registration" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">MemoizePlugin</span></code> auto-detects the project type and registers the appropriate transformation:</p>
@@ -416,8 +424,8 @@
 <span class="w">           </span><span class="o">!</span><span class="n">className</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">&quot;androidx.&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
 <span class="w">           </span><span class="o">!</span><span class="n">className</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">&quot;kotlin.&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
 <span class="w">           </span><span class="o">!</span><span class="n">className</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">&quot;java.&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">           </span><span class="o">!</span><span class="n">className</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">&quot;dev.memoize.runtime.&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
-<span class="w">           </span><span class="o">!</span><span class="n">className</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">&quot;dev.memoize.annotations.&quot;</span><span class="p">)</span>
+<span class="w">           </span><span class="o">!</span><span class="n">className</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">&quot;io.github.sanadlab.runtime.&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">           </span><span class="o">!</span><span class="n">className</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="s">&quot;io.github.sanadlab.annotations.&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -450,7 +458,7 @@ Pass 2 (Visitor API - AdviceAdapter):
 <span class="w">                         </span><span class="p">(</span><span class="n">method</span><span class="p">.</span><span class="na">invisibleAnnotations</span><span class="p">.</span><span class="na">orEmpty</span><span class="p">())</span>
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">ann</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">allAnnotations</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">ann</span><span class="p">.</span><span class="na">desc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="s">&quot;Ldev/memoize/annotations/Memoize;&quot;</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="s">&quot;Lio/github/sanadlab/annotations/Memoize;&quot;</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="c1">// Read maxSize parameter</span>
 <span class="w">                </span><span class="kd">var</span><span class="w"> </span><span class="nv">maxSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">128</span>
 <span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ann</span><span class="p">.</span><span class="na">values</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -462,7 +470,7 @@ Pass 2 (Visitor API - AdviceAdapter):
 <span class="w">                </span><span class="p">}</span>
 <span class="w">                </span><span class="n">memoizedMethods</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">MemoMethodInfo</span><span class="p">(</span><span class="n">method</span><span class="p">.</span><span class="na">name</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">desc</span><span class="p">,</span><span class="w"> </span><span class="n">maxSize</span><span class="p">))</span>
 <span class="w">            </span><span class="p">}</span>
-<span class="w">            </span><span class="s">&quot;Ldev/memoize/annotations/CacheInvalidate;&quot;</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="s">&quot;Lio/github/sanadlab/annotations/CacheInvalidate;&quot;</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="n">invalidateMethods</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">method</span><span class="p">.</span><span class="na">name</span><span class="p">)</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
@@ -478,17 +486,17 @@ Pass 2 (Visitor API - AdviceAdapter):
 <div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="c1">// One MemoCacheManager field per class</span>
 <span class="n">classNode</span><span class="p">.</span><span class="na">fields</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">FieldNode</span><span class="p">(</span>
 <span class="w">    </span><span class="n">ACC_PRIVATE</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACC_SYNTHETIC</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;__memoCacheManager&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s">&quot;Ldev/memoize/runtime/MemoCacheManager;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="s">&quot;Lio/github/sanadlab/runtime/MemoCacheManager;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span>
 <span class="p">))</span>
 
 <span class="c1">// One MemoDispatcher field per memoized method (with hash suffix)</span>
 <span class="n">classNode</span><span class="p">.</span><span class="na">fields</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">FieldNode</span><span class="p">(</span>
 <span class="w">    </span><span class="n">ACC_PRIVATE</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACC_SYNTHETIC</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;__memoDispatcher_search_297da&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s">&quot;Ldev/memoize/runtime/MemoDispatcher;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="s">&quot;Lio/github/sanadlab/runtime/MemoDispatcher;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span>
 <span class="p">))</span>
 <span class="n">classNode</span><span class="p">.</span><span class="na">fields</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">FieldNode</span><span class="p">(</span>
 <span class="w">    </span><span class="n">ACC_PRIVATE</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACC_SYNTHETIC</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;__memoDispatcher_length_8aec2&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s">&quot;Ldev/memoize/runtime/MemoDispatcher;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">    </span><span class="s">&quot;Lio/github/sanadlab/runtime/MemoDispatcher;&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span>
 <span class="p">))</span>
 </pre></div>
 </div>

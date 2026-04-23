@@ -2,7 +2,7 @@
 
 ## Annotations
 
-### dev.memoize.annotations
+### io.github.sanadlab.annotations
 
 | Annotation | Target | Description |
 |-----------|--------|-------------|
@@ -42,7 +42,7 @@
 
 ## Runtime Classes
 
-### dev.memoize.runtime
+### io.github.sanadlab.runtime
 
 | Class | Description |
 |-------|-------------|
@@ -99,14 +99,14 @@
 ### Plugin ID
 
 ```
-id("dev.memoize")
+id("io.github.sanadlab")
 ```
 
 ### Behavior
 
 - **Android projects**: Registers `MemoizeClassVisitorFactory` via AGP Instrumentation API
 - **JVM projects**: Registers post-compilation task via `JvmBytecodeTransformer`
-- Scope: project classes only (skips `android.*`, `androidx.*`, `kotlin.*`, `java.*`, `dev.memoize.*`)
+- Scope: project classes only (skips `android.*`, `androidx.*`, `kotlin.*`, `java.*`, `io.github.sanadlab.*`)
 - All `@Memoize` parameters are read and passed to `MemoDispatcher.create()`
 
 ### Injected Synthetic Fields
@@ -123,7 +123,7 @@ The `<hash>` is a 5-hex-digit hash of `name + descriptor`, ensuring overloaded m
 ## File Locations
 
 ```
-memoize-annotations/src/main/java/dev/memoize/annotations/
+memoize-annotations/src/main/java/io/github/sanadlab/annotations/
   ├── Memoize.java
   ├── CacheInvalidate.java
   ├── CacheKey.java
@@ -131,7 +131,7 @@ memoize-annotations/src/main/java/dev/memoize/annotations/
   ├── EvictionPolicy.java
   └── ThreadSafety.java
 
-memoize-runtime/src/main/java/dev/memoize/runtime/
+memoize-runtime/src/main/java/io/github/sanadlab/runtime/
   ├── MemoCache.java
   ├── LruMemoCache.java
   ├── UnsynchronizedLruMemoCache.java
@@ -141,11 +141,11 @@ memoize-runtime/src/main/java/dev/memoize/runtime/
   ├── MemoCacheManager.java
   └── CacheStats.java
 
-memoize-ksp/src/main/kotlin/dev/memoize/ksp/
+memoize-ksp/src/main/kotlin/io/github/sanadlab/ksp/
   ├── MemoizeProcessorProvider.kt
   └── MemoizeProcessor.kt
 
-memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/
+memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/
   ├── MemoizePlugin.kt
   ├── MemoizeClassVisitorFactory.kt
   ├── MemoizeClassVisitor.kt

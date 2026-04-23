@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples &mdash; MemoizeLib Documentation</title>
+  <title>Examples &mdash; MORAl Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -35,7 +35,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            MemoizeLib
+            MORAl
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,7 +52,15 @@
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html#installation">Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-1-add-the-plugin-to-your-settings">Step 1: Add the plugin to your settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-2-apply-the-plugin-and-add-dependencies">Step 2: Apply the plugin and add dependencies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#the-minimal-pattern">3.1   The minimal pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#selective-full-flush-across-multiple-methods">3.2   Selective full-flush across multiple methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#single-entry-eviction-when-you-know-which-row-changed">3.3   Single-entry eviction when you know which row changed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#heterogeneous-targets-on-one-mutator">3.4   Heterogeneous targets on one mutator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#key-builders-with-ambient-extra-state">3.5   Key builders with ambient / extra state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#legacy-and-structured-can-be-combined">3.6   Legacy and structured can be combined</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-4-build-and-verify">Step 4: Build and verify</a></li>
 </ul>
 </li>
@@ -313,14 +321,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api-reference.html#annotations">Annotations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-annotations">dev.memoize.annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#io-github-sanadlab-annotations">io.github.sanadlab.annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memoize-parameters">&#64;Memoize Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#cacheinvalidate-parameters">&#64;CacheInvalidate Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#enums">Enums</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api-reference.html#runtime-classes">Runtime Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-runtime">dev.memoize.runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#io-github-sanadlab-runtime">io.github.sanadlab.runtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memodispatcher-methods">MemoDispatcher Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memocachemanager-methods">MemoCacheManager Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#cachestats-methods">CacheStats Methods</a></li>
@@ -343,7 +351,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">MemoizeLib</a>
+          <a href="index.html">MORAl</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -367,7 +375,7 @@
 <h2>Basic Memoization<a class="headerlink" href="#basic-memoization" title="Link to this heading"></a></h2>
 <section id="simple-pure-function">
 <h3>Simple Pure Function<a class="headerlink" href="#simple-pure-function" title="Link to this heading"></a></h3>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span><span class="p">;</span>
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MathUtils</span><span class="w"> </span><span class="p">{</span>
 
@@ -383,8 +391,8 @@
 </section>
 <section id="query-method-with-full-invalidation">
 <h3>Query Method with Full Invalidation<a class="headerlink" href="#query-method-with-full-invalidation" title="Link to this heading"></a></h3>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.CacheInvalidate</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.CacheInvalidate</span><span class="p">;</span>
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LinkedList</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Node</span><span class="w"> </span><span class="n">head</span><span class="p">;</span>
@@ -436,8 +444,8 @@
 <section id="selective-cache-invalidation">
 <h3>Selective Cache Invalidation<a class="headerlink" href="#selective-cache-invalidation" title="Link to this heading"></a></h3>
 <p>When a class has many memoized methods and you know a mutation only affects specific caches, use selective invalidation to avoid unnecessarily clearing unrelated caches:</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.CacheInvalidate</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.CacheInvalidate</span><span class="p">;</span>
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DocumentStore</span><span class="w"> </span><span class="p">{</span>
 
@@ -505,8 +513,8 @@ store.getUserPrefs()    // HIT -&gt; still cached!
 <section id="method-overloading">
 <h2>Method Overloading<a class="headerlink" href="#method-overloading" title="Link to this heading"></a></h2>
 <p>Overloaded methods are fully supported. Each overload gets its own independent cache:</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.CacheInvalidate</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.CacheInvalidate</span><span class="p">;</span>
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Calculator</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
@@ -541,8 +549,8 @@ compute(int, int) → __memoDispatcher_compute_df4b2
 <section id="thread-safety-options">
 <h2>Thread Safety Options<a class="headerlink" href="#thread-safety-options" title="Link to this heading"></a></h2>
 <p>Choose the right synchronization strategy based on your access pattern:</p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.ThreadSafety</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.ThreadSafety</span><span class="p">;</span>
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Processor</span><span class="w"> </span><span class="p">{</span>
 
@@ -571,8 +579,8 @@ compute(int, int) → __memoDispatcher_compute_df4b2
 </section>
 <section id="kotlin-example">
 <h2>Kotlin Example<a class="headerlink" href="#kotlin-example" title="Link to this heading"></a></h2>
-<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span>
-<span class="k">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.CacheInvalidate</span>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.CacheInvalidate</span>
 
 <span class="kd">class</span><span class="w"> </span><span class="nc">UserRepository</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">db</span><span class="p">:</span><span class="w"> </span><span class="n">Database</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
@@ -670,7 +678,7 @@ compute(int, int) → __memoDispatcher_compute_df4b2
 <p>Enable auto-monitoring to automatically disable caches that aren’t performing well. This is useful when you’re unsure whether memoization will be beneficial for a method, or when argument cardinality may be too high.</p>
 <section id="basic-auto-monitor">
 <h3>Basic Auto-Monitor<a class="headerlink" href="#basic-auto-monitor" title="Link to this heading"></a></h3>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span><span class="p">;</span>
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SearchService</span><span class="w"> </span><span class="p">{</span>
 
@@ -729,8 +737,8 @@ call(100) // miss
 <section id="java-android-demo">
 <h3>Java Android Demo<a class="headerlink" href="#java-android-demo" title="Link to this heading"></a></h3>
 <p><strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">linkedlistdemo/linked_list_demo_java_gradle_android/app/src/main/java/com/linkedlist/app/LinkedList.java</span></code></p>
-<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.CacheInvalidate</span><span class="p">;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span><span class="p">;</span>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.CacheInvalidate</span><span class="p">;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span><span class="p">;</span>
 
 <span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LinkedList</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Node</span><span class="w"> </span><span class="n">head</span><span class="p">;</span>
@@ -756,8 +764,8 @@ call(100) // miss
 <section id="kotlin-android-demo">
 <h3>Kotlin Android Demo<a class="headerlink" href="#kotlin-android-demo" title="Link to this heading"></a></h3>
 <p><strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">linkedlistdemo/linked_list_demo_kotlin_gradle_android/app/src/main/java/com/linkedlist/app/LinkedList.kt</span></code></p>
-<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.CacheInvalidate</span>
-<span class="k">import</span><span class="w"> </span><span class="nn">dev.memoize.annotations.Memoize</span>
+<div class="highlight-kotlin notranslate"><div class="highlight"><pre><span></span><span class="k">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.CacheInvalidate</span>
+<span class="k">import</span><span class="w"> </span><span class="nn">io.github.sanadlab.annotations.Memoize</span>
 
 <span class="kd">class</span><span class="w"> </span><span class="nc">LinkedList</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">head</span><span class="p">:</span><span class="w"> </span><span class="n">Node? </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span>

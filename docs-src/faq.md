@@ -4,11 +4,11 @@
 
 ### What does this library do?
 
-MemoizeLib automatically caches method return values based on their arguments. When you annotate a method with `@Memoize`, the library injects cache-check logic at build time. The first call computes and caches the result; subsequent calls with the same arguments return the cached value instantly.
+MORAl automatically caches method return values based on their arguments. When you annotate a method with `@Memoize`, the library injects cache-check logic at build time. The first call computes and caches the result; subsequent calls with the same arguments return the cached value instantly.
 
 ### How is this different from Spring's @Cacheable?
 
-Spring's `@Cacheable` uses AOP proxies at runtime, requires the Spring container, and only works for Spring-managed beans. MemoizeLib uses ASM bytecode transformation at build time, has no runtime framework dependency, and works on any Android class. Spring's caching infrastructure is also too heavyweight for mobile.
+Spring's `@Cacheable` uses AOP proxies at runtime, requires the Spring container, and only works for Spring-managed beans. MORAl uses ASM bytecode transformation at build time, has no runtime framework dependency, and works on any Android class. Spring's caching infrastructure is also too heavyweight for mobile.
 
 ### Does it work on Kotlin classes?
 
@@ -92,10 +92,10 @@ Minimally. The ASM transformation adds < 1 second for typical projects. Only pro
 It should, but ProGuard keep rules are not yet bundled with the library. You may need to add:
 
 ```proguard
--keep class dev.memoize.runtime.** { *; }
+-keep class io.github.sanadlab.runtime.** { *; }
 -keepclassmembers class * {
-    private dev.memoize.runtime.MemoCacheManager __memoCacheManager;
-    private dev.memoize.runtime.MemoDispatcher __memoDispatcher_*;
+    private io.github.sanadlab.runtime.MemoCacheManager __memoCacheManager;
+    private io.github.sanadlab.runtime.MemoDispatcher __memoDispatcher_*;
 }
 ```
 

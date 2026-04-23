@@ -33,10 +33,10 @@ Minified release builds may strip or rename runtime classes and synthetic fields
 **Workaround:** Add to your `proguard-rules.pro`:
 
 ```proguard
--keep class dev.memoize.runtime.** { *; }
+-keep class io.github.sanadlab.runtime.** { *; }
 -keepclassmembers class * {
-    private dev.memoize.runtime.MemoCacheManager __memoCacheManager;
-    private dev.memoize.runtime.MemoDispatcher __memoDispatcher_*;
+    private io.github.sanadlab.runtime.MemoCacheManager __memoCacheManager;
+    private io.github.sanadlab.runtime.MemoDispatcher __memoDispatcher_*;
 }
 ```
 

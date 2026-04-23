@@ -1,4 +1,4 @@
-# memoize-lib benchmark demo
+# MORAl benchmark demo
 
 A Jetpack-Benchmark harness that quantifies what `@Memoize` is actually
 worth on Android. Ships with ten compute-intensive algorithms -- all
@@ -58,8 +58,8 @@ Prerequisites:
    `androidx.benchmark.suppressErrors=DEBUGGABLE,EMULATOR,UNLOCKED,LOW-BATTERY`
    to allow it during development. Remove those suppressions for the
    final numbers you quote.
-3. `memoize-lib` built and published -- we pick it up via `includeBuild`
-   from `../memoize-lib`, so no extra setup is needed.
+3. `MORAl` built and published -- we pick it up via `includeBuild`
+   from `../MORAl`, so no extra setup is needed.
 
 ```bash
 # Build everything (no device needed)

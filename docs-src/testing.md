@@ -21,7 +21,7 @@
 These test the core caching library without any ASM involvement:
 
 ```bash
-cd memoize-lib
+cd MORAl
 ./gradlew :memoize-runtime:test
 ```
 
@@ -30,7 +30,7 @@ cd memoize-lib
 These test the annotated LinkedList in the test Android app:
 
 ```bash
-cd memoize-lib/memoize-test-android
+cd MORAl/memoize-test-android
 ./gradlew testDebugUnitTest
 ```
 
@@ -39,7 +39,7 @@ cd memoize-lib/memoize-test-android
 These test overloading, thread safety, and selective invalidation on plain JVM:
 
 ```bash
-cd memoize-lib/memoize-test-jvm
+cd MORAl/memoize-test-jvm
 ./gradlew test
 ```
 
@@ -48,7 +48,7 @@ cd memoize-lib/memoize-test-jvm
 These test Kotlin-compiled classes with the bytecode transformation:
 
 ```bash
-cd memoize-lib/memoize-test-kotlin-jvm
+cd MORAl/memoize-test-kotlin-jvm
 ./gradlew test
 ```
 
@@ -58,15 +58,15 @@ Confirms the ASM transformation produces valid bytecode:
 
 ```bash
 # Android
-cd memoize-lib/memoize-test-android
+cd MORAl/memoize-test-android
 ./gradlew assembleDebug
 
 # JVM (Java)
-cd memoize-lib/memoize-test-jvm
+cd MORAl/memoize-test-jvm
 ./gradlew build
 
 # JVM (Kotlin)
-cd memoize-lib/memoize-test-kotlin-jvm
+cd MORAl/memoize-test-kotlin-jvm
 ./gradlew build
 ```
 
@@ -75,7 +75,7 @@ cd memoize-lib/memoize-test-kotlin-jvm
 Verify the transformation is structurally correct:
 
 ```bash
-javap -p build/intermediates/classes/debug/transformDebugClassesWithAsm/dirs/dev/memoize/test/LinkedList.class
+javap -p build/intermediates/classes/debug/transformDebugClassesWithAsm/dirs/io/github/sanadlab/test/LinkedList.class
 ```
 
 Expected output includes `__memoCacheManager` and `__memoDispatcher_*` fields.
@@ -84,7 +84,7 @@ Expected output includes `__memoCacheManager` and `__memoDispatcher_*` fields.
 
 ### CacheKeyWrapperTest
 
-Source: [`memoize-runtime/src/test/java/dev/memoize/runtime/CacheKeyWrapperTest.java`](../memoize-runtime/src/test/java/dev/memoize/runtime/CacheKeyWrapperTest.java)
+Source: [`memoize-runtime/src/test/java/io/github/sanadlab/runtime/CacheKeyWrapperTest.java`](../memoize-runtime/src/test/java/io/github/sanadlab/runtime/CacheKeyWrapperTest.java)
 
 Tests `CacheKeyWrapper` equality and hashing:
 
@@ -100,7 +100,7 @@ Tests `CacheKeyWrapper` equality and hashing:
 
 ### LruMemoCacheTest
 
-Source: [`memoize-runtime/src/test/java/dev/memoize/runtime/LruMemoCacheTest.java`](../memoize-runtime/src/test/java/dev/memoize/runtime/LruMemoCacheTest.java)
+Source: [`memoize-runtime/src/test/java/io/github/sanadlab/runtime/LruMemoCacheTest.java`](../memoize-runtime/src/test/java/io/github/sanadlab/runtime/LruMemoCacheTest.java)
 
 - `basicGetPut` -- Put and retrieve a value
 - `evictsWhenOverMaxSize` -- Adding 4th entry to size-3 cache evicts the oldest
@@ -112,7 +112,7 @@ Source: [`memoize-runtime/src/test/java/dev/memoize/runtime/LruMemoCacheTest.jav
 
 ### MemoDispatcherTest
 
-Source: [`memoize-runtime/src/test/java/dev/memoize/runtime/MemoDispatcherTest.java`](../memoize-runtime/src/test/java/dev/memoize/runtime/MemoDispatcherTest.java)
+Source: [`memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoDispatcherTest.java`](../memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoDispatcherTest.java)
 
 - `cachesResultOnSecondCall` -- Second call with same args returns cached value (compute called once)
 - `differentArgsMissCache` -- Different args trigger recomputation
@@ -128,7 +128,7 @@ Source: [`memoize-runtime/src/test/java/dev/memoize/runtime/MemoDispatcherTest.j
 
 ### MemoCacheManagerTest
 
-Source: [`memoize-runtime/src/test/java/dev/memoize/runtime/MemoCacheManagerTest.java`](../memoize-runtime/src/test/java/dev/memoize/runtime/MemoCacheManagerTest.java)
+Source: [`memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoCacheManagerTest.java`](../memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoCacheManagerTest.java)
 
 - `invalidateAllClearsAllDispatchers` -- Two dispatchers registered; `invalidateAll()` clears both
 - `selectiveInvalidateClearsOnlySpecifiedDispatchers` -- 3 dispatchers; invalidate 2, verify 3rd is untouched
@@ -140,7 +140,7 @@ Source: [`memoize-runtime/src/test/java/dev/memoize/runtime/MemoCacheManagerTest
 
 ### LinkedListMemoTest
 
-Source: [`memoize-test-android/src/test/java/dev/memoize/test/LinkedListMemoTest.java`](../memoize-test-android/src/test/java/dev/memoize/test/LinkedListMemoTest.java)
+Source: [`memoize-test-android/src/test/java/io/github/sanadlab/test/LinkedListMemoTest.java`](../memoize-test-android/src/test/java/io/github/sanadlab/test/LinkedListMemoTest.java)
 
 End-to-end tests using the annotated `LinkedList`:
 
@@ -160,7 +160,7 @@ End-to-end tests using the annotated `LinkedList`:
 
 ### CalculatorTest (JVM)
 
-Source: [`memoize-test-jvm/src/test/java/dev/memoize/testjvm/CalculatorTest.java`](../memoize-test-jvm/src/test/java/dev/memoize/testjvm/CalculatorTest.java)
+Source: [`memoize-test-jvm/src/test/java/io/github/sanadlab/testjvm/CalculatorTest.java`](../memoize-test-jvm/src/test/java/io/github/sanadlab/testjvm/CalculatorTest.java)
 
 JVM-specific tests using a `Calculator` class with overloaded methods and thread safety options:
 
@@ -177,7 +177,7 @@ JVM-specific tests using a `Calculator` class with overloaded methods and thread
 
 ### StringProcessorTest (Kotlin JVM)
 
-Source: [`memoize-test-kotlin-jvm/src/test/kotlin/dev/memoize/testkotlin/StringProcessorTest.kt`](../memoize-test-kotlin-jvm/src/test/kotlin/dev/memoize/testkotlin/StringProcessorTest.kt)
+Source: [`memoize-test-kotlin-jvm/src/test/kotlin/io/github/sanadlab/testkotlin/StringProcessorTest.kt`](../memoize-test-kotlin-jvm/src/test/kotlin/io/github/sanadlab/testkotlin/StringProcessorTest.kt)
 
 Kotlin-specific integration tests using `StringProcessor` with Kotlin features:
 
@@ -197,7 +197,7 @@ Kotlin-specific integration tests using `StringProcessor` with Kotlin features:
 
 ### MathServiceTest (Kotlin JVM)
 
-Source: [`memoize-test-kotlin-jvm/src/test/kotlin/dev/memoize/testkotlin/MathServiceTest.kt`](../memoize-test-kotlin-jvm/src/test/kotlin/dev/memoize/testkotlin/MathServiceTest.kt)
+Source: [`memoize-test-kotlin-jvm/src/test/kotlin/io/github/sanadlab/testkotlin/MathServiceTest.kt`](../memoize-test-kotlin-jvm/src/test/kotlin/io/github/sanadlab/testkotlin/MathServiceTest.kt)
 
 Kotlin tests for auto-monitor, TTL, and stats:
 

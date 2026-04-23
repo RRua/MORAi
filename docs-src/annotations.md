@@ -1,8 +1,8 @@
 # Annotations API
 
-All annotations are in the `dev.memoize.annotations` package. They use `RetentionPolicy.CLASS` -- readable by ASM at build time but stripped from the final APK.
+All annotations are in the `io.github.sanadlab.annotations` package. They use `RetentionPolicy.CLASS` -- readable by ASM at build time but stripped from the final APK.
 
-Source: [`memoize-annotations/src/main/java/dev/memoize/annotations/`](https://github.com)
+Source: [`memoize-annotations/src/main/java/io/github/sanadlab/annotations/`](https://github.com)
 
 ## @Memoize
 

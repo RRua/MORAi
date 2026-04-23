@@ -1,8 +1,8 @@
 # Runtime Library
 
-The runtime library provides the cache infrastructure that ASM-injected bytecode calls into. All classes are in the `dev.memoize.runtime` package.
+The runtime library provides the cache infrastructure that ASM-injected bytecode calls into. All classes are in the `io.github.sanadlab.runtime` package.
 
-Source: [`memoize-runtime/src/main/java/dev/memoize/runtime/`](https://github.com)
+Source: [`memoize-runtime/src/main/java/io/github/sanadlab/runtime/`](https://github.com)
 
 ## Class Hierarchy
 

@@ -1,6 +1,6 @@
 # Configuration file for the Sphinx documentation builder.
 
-project = "MemoizeLib"
+project = "MORAl"
 copyright = "2026, NYU Abu Dhabi"
 author = "Rui Rua"
 release = "0.1.0"
@@ -39,8 +39,8 @@ html_theme_options = {
     "titles_only": False,
     "logo_only": False,
 }
-html_title = "MemoizeLib Documentation"
-html_short_title = "MemoizeLib"
+html_title = "MORAl Documentation"
+html_short_title = "MORAl"
 
 # Copy button settings
 copybutton_prompt_text = r">>> |\.\.\. |\$ "

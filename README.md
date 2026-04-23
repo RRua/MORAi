@@ -1,4 +1,4 @@
-# MemoizeLib: Annotation-Based Memoization Library for Android
+# MORAl: Annotation-Based Memoization Library for Android
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@
 
 ## 1. Overview
 
-MemoizeLib is an annotation-based memoization library for Android that allows developers to cache method results by simply adding `@Memoize` to a method. A Gradle plugin performs ASM bytecode transformation at build time to inject all cache mechanics transparently -- no call-site changes, no wrapper classes, no boilerplate.
+MORAl is an annotation-based memoization library for Android that allows developers to cache method results by simply adding `@Memoize` to a method. A Gradle plugin performs ASM bytecode transformation at build time to inject all cache mechanics transparently -- no call-site changes, no wrapper classes, no boilerplate.
 
 **Developer experience:**
 
@@ -79,7 +79,7 @@ All actual cache logic (LRU eviction, key construction, TTL, thread safety) is i
 ## 3. Module Structure
 
 ```
-memoize-lib/
+MORAl/
 ├── memoize-annotations/        Pure Java library -- annotation definitions
 ├── memoize-runtime/            Java library -- cache implementations
 ├── memoize-ksp/                Kotlin library -- compile-time validation
@@ -107,7 +107,7 @@ The annotations module has zero dependencies. The runtime depends only on annota
 
 ### `@Memoize`
 
-**File:** [`memoize-annotations/src/main/java/dev/memoize/annotations/Memoize.java`](memoize-annotations/src/main/java/dev/memoize/annotations/Memoize.java)
+**File:** [`memoize-annotations/src/main/java/io/github/sanadlab/annotations/Memoize.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/Memoize.java)
 
 Marks a method for automatic memoization. The method must have a non-void return type.
 
@@ -137,7 +137,7 @@ public @interface Memoize {
 
 ### `@CacheInvalidate`
 
-**File:** [`memoize-annotations/src/main/java/dev/memoize/annotations/CacheInvalidate.java`](memoize-annotations/src/main/java/dev/memoize/annotations/CacheInvalidate.java)
+**File:** [`memoize-annotations/src/main/java/io/github/sanadlab/annotations/CacheInvalidate.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/CacheInvalidate.java)
 
 Marks a mutating method as a cache invalidator. Supports both **full invalidation** (all caches) and **selective invalidation** (specific methods only).
 
@@ -178,7 +178,7 @@ At the bytecode level:
 
 ### `@CacheKey`
 
-**File:** [`memoize-annotations/src/main/java/dev/memoize/annotations/CacheKey.java`](memoize-annotations/src/main/java/dev/memoize/annotations/CacheKey.java)
+**File:** [`memoize-annotations/src/main/java/io/github/sanadlab/annotations/CacheKey.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/CacheKey.java)
 
 Specifies which field of a complex parameter to use for cache key construction.
 
@@ -194,19 +194,19 @@ public Route findRoute(@CacheKey("id") Location start, @CacheKey("id") Location 
 ### Enums
 
 **Files:**
-- [`CacheScope.java`](memoize-annotations/src/main/java/dev/memoize/annotations/CacheScope.java): `INSTANCE` (per-object) or `CLASS` (static/shared)
-- [`EvictionPolicy.java`](memoize-annotations/src/main/java/dev/memoize/annotations/EvictionPolicy.java): `LRU` or `NONE`
-- [`ThreadSafety.java`](memoize-annotations/src/main/java/dev/memoize/annotations/ThreadSafety.java): `NONE`, `SYNCHRONIZED`, or `CONCURRENT`
+- [`CacheScope.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/CacheScope.java): `INSTANCE` (per-object) or `CLASS` (static/shared)
+- [`EvictionPolicy.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/EvictionPolicy.java): `LRU` or `NONE`
+- [`ThreadSafety.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/ThreadSafety.java): `NONE`, `SYNCHRONIZED`, or `CONCURRENT`
 
 ---
 
 ## 5. Runtime Library
 
-The runtime library provides the cache infrastructure that the ASM-injected bytecode calls into. All classes are in the `dev.memoize.runtime` package.
+The runtime library provides the cache infrastructure that the ASM-injected bytecode calls into. All classes are in the `io.github.sanadlab.runtime` package.
 
 ### 5.1 `MemoCache<K, V>` (Interface)
 
-**File:** [`memoize-runtime/.../MemoCache.java`](memoize-runtime/src/main/java/dev/memoize/runtime/MemoCache.java)
+**File:** [`memoize-runtime/.../MemoCache.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/MemoCache.java)
 
 ```java
 public interface MemoCache<K, V> {
@@ -219,7 +219,7 @@ public interface MemoCache<K, V> {
 
 ### 5.2 `LruMemoCache<K, V>`
 
-**File:** [`memoize-runtime/.../LruMemoCache.java`](memoize-runtime/src/main/java/dev/memoize/runtime/LruMemoCache.java)
+**File:** [`memoize-runtime/.../LruMemoCache.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/LruMemoCache.java)
 
 LRU cache backed by `LinkedHashMap` with access-order iteration. When size exceeds `maxSize`, the least recently accessed entry is evicted.
 
@@ -239,13 +239,13 @@ Thread safety is via `synchronized` methods. All `get`, `put`, `clear`, and `siz
 
 ### 5.3 `ConcurrentMemoCache<K, V>`
 
-**File:** [`memoize-runtime/.../ConcurrentMemoCache.java`](memoize-runtime/src/main/java/dev/memoize/runtime/ConcurrentMemoCache.java)
+**File:** [`memoize-runtime/.../ConcurrentMemoCache.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/ConcurrentMemoCache.java)
 
 Unbounded cache backed by `ConcurrentHashMap`. Lock-free reads, bucket-level write locks. No automatic eviction.
 
 ### 5.4 `CacheKeyWrapper`
 
-**File:** [`memoize-runtime/.../CacheKeyWrapper.java`](memoize-runtime/src/main/java/dev/memoize/runtime/CacheKeyWrapper.java)
+**File:** [`memoize-runtime/.../CacheKeyWrapper.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/CacheKeyWrapper.java)
 
 Wraps method arguments (`Object[]`) into a proper cache key with correct `hashCode()`/`equals()` semantics.
 
@@ -277,7 +277,7 @@ Key design decisions:
 
 ### 5.5 `MemoDispatcher`
 
-**File:** [`memoize-runtime/.../MemoDispatcher.java`](memoize-runtime/src/main/java/dev/memoize/runtime/MemoDispatcher.java)
+**File:** [`memoize-runtime/.../MemoDispatcher.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/MemoDispatcher.java)
 
 The core class that the ASM-injected bytecode calls. Each `@Memoize`-annotated method gets its own `MemoDispatcher` instance.
 
@@ -338,7 +338,7 @@ if (timestamps != null) {
 
 ### 5.6 `MemoCacheManager`
 
-**File:** [`memoize-runtime/.../MemoCacheManager.java`](memoize-runtime/src/main/java/dev/memoize/runtime/MemoCacheManager.java)
+**File:** [`memoize-runtime/.../MemoCacheManager.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/MemoCacheManager.java)
 
 Manages all `MemoDispatcher` instances for a single object. The ASM transformation adds one `MemoCacheManager` field per instrumented class.
 
@@ -374,7 +374,7 @@ The manager supports two modes:
 
 ### 5.7 `CacheStats`
 
-**File:** [`memoize-runtime/.../CacheStats.java`](memoize-runtime/src/main/java/dev/memoize/runtime/CacheStats.java)
+**File:** [`memoize-runtime/.../CacheStats.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/CacheStats.java)
 
 Thread-safe statistics tracker using `AtomicLong` counters:
 
@@ -401,7 +401,7 @@ This is the core mechanism that makes `@Memoize` transparent. The transformation
 
 ### 6.1 Plugin Registration
 
-**File:** [`memoize-gradle-plugin/.../MemoizePlugin.kt`](memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/MemoizePlugin.kt)
+**File:** [`memoize-gradle-plugin/.../MemoizePlugin.kt`](memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/MemoizePlugin.kt)
 
 ```kotlin
 class MemoizePlugin : Plugin<Project> {
@@ -424,7 +424,7 @@ This registers the `MemoizeClassVisitorFactory` to be called for every `.class` 
 
 ### 6.2 Class Filtering
 
-**File:** [`memoize-gradle-plugin/.../MemoizeClassVisitorFactory.kt`](memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/MemoizeClassVisitorFactory.kt)
+**File:** [`memoize-gradle-plugin/.../MemoizeClassVisitorFactory.kt`](memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/MemoizeClassVisitorFactory.kt)
 
 ```kotlin
 override fun isInstrumentable(classData: ClassData): Boolean {
@@ -433,8 +433,8 @@ override fun isInstrumentable(classData: ClassData): Boolean {
            !className.startsWith("androidx.") &&
            !className.startsWith("kotlin.") &&
            !className.startsWith("java.") &&
-           !className.startsWith("dev.memoize.runtime.") &&
-           !className.startsWith("dev.memoize.annotations.")
+           !className.startsWith("io.github.sanadlab.runtime.") &&
+           !className.startsWith("io.github.sanadlab.annotations.")
 }
 ```
 
@@ -442,7 +442,7 @@ All project classes are visited (since AGP's `ClassData` doesn't expose method-l
 
 ### 6.3 Two-Pass Transformation Strategy
 
-**File:** [`memoize-gradle-plugin/.../MemoizeClassVisitor.kt`](memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/MemoizeClassVisitor.kt)
+**File:** [`memoize-gradle-plugin/.../MemoizeClassVisitor.kt`](memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/MemoizeClassVisitor.kt)
 
 The transformation uses the ASM **tree API** (`ClassNode`) for a two-pass approach:
 
@@ -471,7 +471,7 @@ for (method in classNode.methods) {
     val allAnnotations = (method.visibleAnnotations.orEmpty()) + (method.invisibleAnnotations.orEmpty())
     for (ann in allAnnotations) {
         when (ann.desc) {
-            "Ldev/memoize/annotations/Memoize;" -> {
+            "Lio/github/sanadlab/annotations/Memoize;" -> {
                 var maxSize = 128
                 // Read annotation parameters
                 if (ann.values != null) {
@@ -483,7 +483,7 @@ for (method in classNode.methods) {
                 }
                 memoizedMethods.add(MemoMethodInfo(method.name, method.desc, maxSize))
             }
-            "Ldev/memoize/annotations/CacheInvalidate;" -> {
+            "Lio/github/sanadlab/annotations/CacheInvalidate;" -> {
                 invalidateMethods.add(method.name)
             }
         }
@@ -491,7 +491,7 @@ for (method in classNode.methods) {
 }
 ```
 
-The annotation descriptor format (`Ldev/memoize/annotations/Memoize;`) is the JVM internal name. Annotation values are stored as alternating name-value pairs in the ASM tree model.
+The annotation descriptor format (`Lio/github/sanadlab/annotations/Memoize;`) is the JVM internal name. Annotation values are stored as alternating name-value pairs in the ASM tree model.
 
 ### 6.5 Phase 2: Field Addition
 
@@ -587,8 +587,8 @@ The null check handles the edge case where `@CacheInvalidate` is on a class that
 ## 7. KSP Compile-Time Validation
 
 **Files:**
-- [`memoize-ksp/.../MemoizeProcessorProvider.kt`](memoize-ksp/src/main/kotlin/dev/memoize/ksp/MemoizeProcessorProvider.kt)
-- [`memoize-ksp/.../MemoizeProcessor.kt`](memoize-ksp/src/main/kotlin/dev/memoize/ksp/MemoizeProcessor.kt)
+- [`memoize-ksp/.../MemoizeProcessorProvider.kt`](memoize-ksp/src/main/kotlin/io/github/sanadlab/ksp/MemoizeProcessorProvider.kt)
+- [`memoize-ksp/.../MemoizeProcessor.kt`](memoize-ksp/src/main/kotlin/io/github/sanadlab/ksp/MemoizeProcessor.kt)
 
 The KSP processor runs during Kotlin compilation and validates `@Memoize` usage:
 
@@ -754,7 +754,7 @@ public boolean search(int);
 
 ```kotlin
 pluginManagement {
-    includeBuild("path/to/memoize-lib")  // or use mavenLocal/maven repo
+    includeBuild("path/to/MORAl")  // or use mavenLocal/maven repo
     repositories {
         gradlePluginPortal()
         google()
@@ -778,20 +778,20 @@ dependencyResolutionManagement {
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("dev.memoize")                  // Apply the memoize plugin
+    id("io.github.sanadlab")                  // Apply the memoize plugin
 }
 
 dependencies {
-    implementation("dev.memoize:memoize-annotations:0.1.0")
-    implementation("dev.memoize:memoize-runtime:0.1.0")
+    implementation("io.github.sanadlab:memoize-annotations:0.1.0")
+    implementation("io.github.sanadlab:memoize-runtime:0.1.0")
 }
 ```
 
 **3. Annotate methods:**
 
 ```java
-import dev.memoize.annotations.Memoize;
-import dev.memoize.annotations.CacheInvalidate;
+import io.github.sanadlab.annotations.Memoize;
+import io.github.sanadlab.annotations.CacheInvalidate;
 
 public class MyService {
     @Memoize(maxSize = 256)
@@ -810,7 +810,7 @@ That's it. No call-site changes, no wrapper classes.
 
 ### Runtime unit tests (25 tests)
 
-**File:** [`memoize-runtime/src/test/java/dev/memoize/runtime/`](memoize-runtime/src/test/java/dev/memoize/runtime/)
+**File:** [`memoize-runtime/src/test/java/io/github/sanadlab/runtime/`](memoize-runtime/src/test/java/io/github/sanadlab/runtime/)
 
 | Test Class | Tests | What's covered |
 |------------|-------|---------------|
@@ -819,11 +819,11 @@ That's it. No call-site changes, no wrapper classes.
 | `MemoDispatcherTest` | 7 | Caching, cache miss, zero-arg methods, null caching, invalidation, stats, composite keys |
 | `MemoCacheManagerTest` | 3 | Bulk invalidation, dispatcher lookup, total size across dispatchers |
 
-Run with: `cd memoize-lib && ./gradlew :memoize-runtime:test`
+Run with: `cd MORAl && ./gradlew :memoize-runtime:test`
 
 ### Integration tests (13 tests)
 
-**File:** [`memoize-test-android/src/test/java/dev/memoize/test/LinkedListMemoTest.java`](memoize-test-android/src/test/java/dev/memoize/test/LinkedListMemoTest.java)
+**File:** [`memoize-test-android/src/test/java/io/github/sanadlab/test/LinkedListMemoTest.java`](memoize-test-android/src/test/java/io/github/sanadlab/test/LinkedListMemoTest.java)
 
 Tests correct behavior of annotated `LinkedList` with `@Memoize` on `search`, `length`, `describe` and `@CacheInvalidate` on `insert`, `delete`, `insertAtHead`:
 
@@ -834,7 +834,7 @@ Tests correct behavior of annotated `LinkedList` with `@Memoize` on `search`, `l
 - Null return values are cached correctly
 - Boolean `false` results are cached correctly
 
-Run with: `cd memoize-lib/memoize-test-android && ./gradlew testDebugUnitTest`
+Run with: `cd MORAl/memoize-test-android && ./gradlew testDebugUnitTest`
 
 > **Note:** Android unit tests run against pre-transformation bytecode (the ASM transform only applies to the APK pipeline). The integration tests validate functional correctness of the source code, while the bytecode transformation is verified via `javap` inspection and the `assembleDebug` build task.
 
@@ -845,7 +845,7 @@ Run with: `cd memoize-lib/memoize-test-android && ./gradlew testDebugUnitTest`
 cd memoize-test-android && ./gradlew assembleDebug
 
 # Inspect transformed class
-javap -p -c build/intermediates/classes/debug/transformDebugClassesWithAsm/dirs/dev/memoize/test/LinkedList.class
+javap -p -c build/intermediates/classes/debug/transformDebugClassesWithAsm/dirs/io/github/sanadlab/test/LinkedList.class
 ```
 
 Expected: fields `__memoCacheManager`, `__memoDispatcher_*` present; constructor initializes them; memoized methods have cache-check at entry.
@@ -890,53 +890,53 @@ Expected: fields `__memoCacheManager`, `__memoDispatcher_*` present; constructor
 
 ## 12. File Index
 
-### Annotations (`memoize-annotations/src/main/java/dev/memoize/annotations/`)
+### Annotations (`memoize-annotations/src/main/java/io/github/sanadlab/annotations/`)
 
 | File | Description |
 |------|-------------|
-| [`Memoize.java`](memoize-annotations/src/main/java/dev/memoize/annotations/Memoize.java) | `@Memoize` annotation with cache configuration parameters |
-| [`CacheInvalidate.java`](memoize-annotations/src/main/java/dev/memoize/annotations/CacheInvalidate.java) | `@CacheInvalidate` annotation for mutating methods |
-| [`CacheKey.java`](memoize-annotations/src/main/java/dev/memoize/annotations/CacheKey.java) | `@CacheKey` for partial key extraction from parameters |
-| [`CacheScope.java`](memoize-annotations/src/main/java/dev/memoize/annotations/CacheScope.java) | `INSTANCE` / `CLASS` enum |
-| [`EvictionPolicy.java`](memoize-annotations/src/main/java/dev/memoize/annotations/EvictionPolicy.java) | `LRU` / `NONE` enum |
-| [`ThreadSafety.java`](memoize-annotations/src/main/java/dev/memoize/annotations/ThreadSafety.java) | `NONE` / `SYNCHRONIZED` / `CONCURRENT` enum |
+| [`Memoize.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/Memoize.java) | `@Memoize` annotation with cache configuration parameters |
+| [`CacheInvalidate.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/CacheInvalidate.java) | `@CacheInvalidate` annotation for mutating methods |
+| [`CacheKey.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/CacheKey.java) | `@CacheKey` for partial key extraction from parameters |
+| [`CacheScope.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/CacheScope.java) | `INSTANCE` / `CLASS` enum |
+| [`EvictionPolicy.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/EvictionPolicy.java) | `LRU` / `NONE` enum |
+| [`ThreadSafety.java`](memoize-annotations/src/main/java/io/github/sanadlab/annotations/ThreadSafety.java) | `NONE` / `SYNCHRONIZED` / `CONCURRENT` enum |
 
-### Runtime (`memoize-runtime/src/main/java/dev/memoize/runtime/`)
-
-| File | Description |
-|------|-------------|
-| [`MemoCache.java`](memoize-runtime/src/main/java/dev/memoize/runtime/MemoCache.java) | Cache interface: `get`, `put`, `clear`, `size` |
-| [`LruMemoCache.java`](memoize-runtime/src/main/java/dev/memoize/runtime/LruMemoCache.java) | LRU cache via `LinkedHashMap` with synchronized access |
-| [`ConcurrentMemoCache.java`](memoize-runtime/src/main/java/dev/memoize/runtime/ConcurrentMemoCache.java) | Lock-free cache via `ConcurrentHashMap` |
-| [`CacheKeyWrapper.java`](memoize-runtime/src/main/java/dev/memoize/runtime/CacheKeyWrapper.java) | `Object[]` wrapper with `deepHashCode`/`deepEquals` |
-| [`MemoDispatcher.java`](memoize-runtime/src/main/java/dev/memoize/runtime/MemoDispatcher.java) | Per-method cache coordinator (called by ASM bytecode) |
-| [`MemoCacheManager.java`](memoize-runtime/src/main/java/dev/memoize/runtime/MemoCacheManager.java) | Per-instance manager: bulk invalidation across all dispatchers |
-| [`CacheStats.java`](memoize-runtime/src/main/java/dev/memoize/runtime/CacheStats.java) | Thread-safe hit/miss/eviction counters |
-
-### KSP Processor (`memoize-ksp/src/main/kotlin/dev/memoize/ksp/`)
+### Runtime (`memoize-runtime/src/main/java/io/github/sanadlab/runtime/`)
 
 | File | Description |
 |------|-------------|
-| [`MemoizeProcessorProvider.kt`](memoize-ksp/src/main/kotlin/dev/memoize/ksp/MemoizeProcessorProvider.kt) | KSP entry point |
-| [`MemoizeProcessor.kt`](memoize-ksp/src/main/kotlin/dev/memoize/ksp/MemoizeProcessor.kt) | Compile-time validation: void check, abstract check, mutable param warnings |
+| [`MemoCache.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/MemoCache.java) | Cache interface: `get`, `put`, `clear`, `size` |
+| [`LruMemoCache.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/LruMemoCache.java) | LRU cache via `LinkedHashMap` with synchronized access |
+| [`ConcurrentMemoCache.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/ConcurrentMemoCache.java) | Lock-free cache via `ConcurrentHashMap` |
+| [`CacheKeyWrapper.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/CacheKeyWrapper.java) | `Object[]` wrapper with `deepHashCode`/`deepEquals` |
+| [`MemoDispatcher.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/MemoDispatcher.java) | Per-method cache coordinator (called by ASM bytecode) |
+| [`MemoCacheManager.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/MemoCacheManager.java) | Per-instance manager: bulk invalidation across all dispatchers |
+| [`CacheStats.java`](memoize-runtime/src/main/java/io/github/sanadlab/runtime/CacheStats.java) | Thread-safe hit/miss/eviction counters |
 
-### Gradle Plugin (`memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/`)
+### KSP Processor (`memoize-ksp/src/main/kotlin/io/github/sanadlab/ksp/`)
 
 | File | Description |
 |------|-------------|
-| [`MemoizePlugin.kt`](memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/MemoizePlugin.kt) | Gradle plugin: registers ASM transform via AGP API |
-| [`MemoizeClassVisitorFactory.kt`](memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/MemoizeClassVisitorFactory.kt) | Factory: creates visitors, filters classes |
-| [`MemoizeClassVisitor.kt`](memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/MemoizeClassVisitor.kt) | Two-pass transformer: tree API for fields/constructor, visitor API for method instrumentation |
+| [`MemoizeProcessorProvider.kt`](memoize-ksp/src/main/kotlin/io/github/sanadlab/ksp/MemoizeProcessorProvider.kt) | KSP entry point |
+| [`MemoizeProcessor.kt`](memoize-ksp/src/main/kotlin/io/github/sanadlab/ksp/MemoizeProcessor.kt) | Compile-time validation: void check, abstract check, mutable param warnings |
+
+### Gradle Plugin (`memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/`)
+
+| File | Description |
+|------|-------------|
+| [`MemoizePlugin.kt`](memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/MemoizePlugin.kt) | Gradle plugin: registers ASM transform via AGP API |
+| [`MemoizeClassVisitorFactory.kt`](memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/MemoizeClassVisitorFactory.kt) | Factory: creates visitors, filters classes |
+| [`MemoizeClassVisitor.kt`](memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/MemoizeClassVisitor.kt) | Two-pass transformer: tree API for fields/constructor, visitor API for method instrumentation |
 
 ### Tests
 
 | File | Tests | Description |
 |------|-------|-------------|
-| [`CacheKeyWrapperTest.java`](memoize-runtime/src/test/java/dev/memoize/runtime/CacheKeyWrapperTest.java) | 9 | Key equality and hashing |
-| [`LruMemoCacheTest.java`](memoize-runtime/src/test/java/dev/memoize/runtime/LruMemoCacheTest.java) | 7 | LRU eviction behavior |
-| [`MemoDispatcherTest.java`](memoize-runtime/src/test/java/dev/memoize/runtime/MemoDispatcherTest.java) | 7 | Cache hit/miss/invalidation |
-| [`MemoCacheManagerTest.java`](memoize-runtime/src/test/java/dev/memoize/runtime/MemoCacheManagerTest.java) | 3 | Bulk invalidation |
-| [`LinkedListMemoTest.java`](memoize-test-android/src/test/java/dev/memoize/test/LinkedListMemoTest.java) | 13 | Integration: correctness, caching, invalidation |
+| [`CacheKeyWrapperTest.java`](memoize-runtime/src/test/java/io/github/sanadlab/runtime/CacheKeyWrapperTest.java) | 9 | Key equality and hashing |
+| [`LruMemoCacheTest.java`](memoize-runtime/src/test/java/io/github/sanadlab/runtime/LruMemoCacheTest.java) | 7 | LRU eviction behavior |
+| [`MemoDispatcherTest.java`](memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoDispatcherTest.java) | 7 | Cache hit/miss/invalidation |
+| [`MemoCacheManagerTest.java`](memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoCacheManagerTest.java) | 3 | Bulk invalidation |
+| [`LinkedListMemoTest.java`](memoize-test-android/src/test/java/io/github/sanadlab/test/LinkedListMemoTest.java) | 13 | Integration: correctness, caching, invalidation |
 
 ### Build Configuration
 

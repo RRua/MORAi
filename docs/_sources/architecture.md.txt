@@ -2,7 +2,7 @@
 
 ## Overview
 
-MemoizeLib uses a two-layer architecture that separates **validation** (compile time) from **transformation** (build time) from **execution** (runtime).
+MORAl uses a two-layer architecture that separates **validation** (compile time) from **transformation** (build time) from **execution** (runtime).
 
 ```
                         ┌─────────────────────────────────────────────┐
@@ -31,7 +31,7 @@ MemoizeLib uses a two-layer architecture that separates **validation** (compile 
 ## Module Structure
 
 ```
-memoize-lib/
+MORAl/
 ├── memoize-annotations/        # Pure Java library (no dependencies)
 │   └── @Memoize, @CacheInvalidate, @CacheKey, enums
 │

@@ -324,10 +324,10 @@ surprising.
 
 - [`README.md`](README.md) -- the top-level overview of the benchmark
   project and the other three suites.
-- [`../memoize-lib/docs/observability.md`](../memoize-lib/docs/observability.md)
+- [`../MORAl/docs/observability.md`](../MORAl/docs/observability.md)
   -- documentation of `MemoLogger`, `MemoMetrics`, and the
   `recordStats` subsystem this benchmark relies on for hit-rate
   cross-validation.
-- [`../memoize-lib/docs/annotations.md`](../memoize-lib/docs/annotations.md)
+- [`../MORAl/docs/annotations.md`](../MORAl/docs/annotations.md)
   -- reference for every `@Memoize` parameter, including
   `autoMonitor`, `minHitRate`, and `monitorWindow` discussed above.

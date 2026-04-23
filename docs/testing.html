@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Testing &mdash; MemoizeLib Documentation</title>
+  <title>Testing &mdash; MORAl Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -35,7 +35,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            MemoizeLib
+            MORAl
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,7 +52,15 @@
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html#installation">Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-1-add-the-plugin-to-your-settings">Step 1: Add the plugin to your settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-2-apply-the-plugin-and-add-dependencies">Step 2: Apply the plugin and add dependencies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#the-minimal-pattern">3.1   The minimal pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#selective-full-flush-across-multiple-methods">3.2   Selective full-flush across multiple methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#single-entry-eviction-when-you-know-which-row-changed">3.3   Single-entry eviction when you know which row changed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#heterogeneous-targets-on-one-mutator">3.4   Heterogeneous targets on one mutator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#key-builders-with-ambient-extra-state">3.5   Key builders with ambient / extra state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#legacy-and-structured-can-be-combined">3.6   Legacy and structured can be combined</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-4-build-and-verify">Step 4: Build and verify</a></li>
 </ul>
 </li>
@@ -313,14 +321,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api-reference.html#annotations">Annotations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-annotations">dev.memoize.annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#io-github-sanadlab-annotations">io.github.sanadlab.annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memoize-parameters">&#64;Memoize Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#cacheinvalidate-parameters">&#64;CacheInvalidate Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#enums">Enums</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api-reference.html#runtime-classes">Runtime Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api-reference.html#dev-memoize-runtime">dev.memoize.runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api-reference.html#io-github-sanadlab-runtime">io.github.sanadlab.runtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memodispatcher-methods">MemoDispatcher Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#memocachemanager-methods">MemoCacheManager Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api-reference.html#cachestats-methods">CacheStats Methods</a></li>
@@ -343,7 +351,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">MemoizeLib</a>
+          <a href="index.html">MORAl</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -417,7 +425,7 @@
 <section id="runtime-unit-tests">
 <h3>Runtime Unit Tests<a class="headerlink" href="#runtime-unit-tests" title="Link to this heading"></a></h3>
 <p>These test the core caching library without any ASM involvement:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>memoize-lib
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>MORAl
 ./gradlew<span class="w"> </span>:memoize-runtime:test
 </pre></div>
 </div>
@@ -425,7 +433,7 @@
 <section id="android-integration-tests">
 <h3>Android Integration Tests<a class="headerlink" href="#android-integration-tests" title="Link to this heading"></a></h3>
 <p>These test the annotated LinkedList in the test Android app:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>memoize-lib/memoize-test-android
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>MORAl/memoize-test-android
 ./gradlew<span class="w"> </span>testDebugUnitTest
 </pre></div>
 </div>
@@ -433,7 +441,7 @@
 <section id="jvm-integration-tests">
 <h3>JVM Integration Tests<a class="headerlink" href="#jvm-integration-tests" title="Link to this heading"></a></h3>
 <p>These test overloading, thread safety, and selective invalidation on plain JVM:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>memoize-lib/memoize-test-jvm
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>MORAl/memoize-test-jvm
 ./gradlew<span class="w"> </span><span class="nb">test</span>
 </pre></div>
 </div>
@@ -441,7 +449,7 @@
 <section id="kotlin-jvm-integration-tests">
 <h3>Kotlin JVM Integration Tests<a class="headerlink" href="#kotlin-jvm-integration-tests" title="Link to this heading"></a></h3>
 <p>These test Kotlin-compiled classes with the bytecode transformation:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>memoize-lib/memoize-test-kotlin-jvm
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>MORAl/memoize-test-kotlin-jvm
 ./gradlew<span class="w"> </span><span class="nb">test</span>
 </pre></div>
 </div>
@@ -450,15 +458,15 @@
 <h3>Full Build Verification<a class="headerlink" href="#full-build-verification" title="Link to this heading"></a></h3>
 <p>Confirms the ASM transformation produces valid bytecode:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Android</span>
-<span class="nb">cd</span><span class="w"> </span>memoize-lib/memoize-test-android
+<span class="nb">cd</span><span class="w"> </span>MORAl/memoize-test-android
 ./gradlew<span class="w"> </span>assembleDebug
 
 <span class="c1"># JVM (Java)</span>
-<span class="nb">cd</span><span class="w"> </span>memoize-lib/memoize-test-jvm
+<span class="nb">cd</span><span class="w"> </span>MORAl/memoize-test-jvm
 ./gradlew<span class="w"> </span>build
 
 <span class="c1"># JVM (Kotlin)</span>
-<span class="nb">cd</span><span class="w"> </span>memoize-lib/memoize-test-kotlin-jvm
+<span class="nb">cd</span><span class="w"> </span>MORAl/memoize-test-kotlin-jvm
 ./gradlew<span class="w"> </span>build
 </pre></div>
 </div>
@@ -466,7 +474,7 @@
 <section id="bytecode-inspection">
 <h3>Bytecode Inspection<a class="headerlink" href="#bytecode-inspection" title="Link to this heading"></a></h3>
 <p>Verify the transformation is structurally correct:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>javap<span class="w"> </span>-p<span class="w"> </span>build/intermediates/classes/debug/transformDebugClassesWithAsm/dirs/dev/memoize/test/LinkedList.class
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>javap<span class="w"> </span>-p<span class="w"> </span>build/intermediates/classes/debug/transformDebugClassesWithAsm/dirs/io/github/sanadlab/test/LinkedList.class
 </pre></div>
 </div>
 <p>Expected output includes <code class="docutils literal notranslate"><span class="pre">__memoCacheManager</span></code> and <code class="docutils literal notranslate"><span class="pre">__memoDispatcher_*</span></code> fields.</p>
@@ -476,7 +484,7 @@
 <h2>Runtime Unit Tests<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="cachekeywrappertest">
 <h3>CacheKeyWrapperTest<a class="headerlink" href="#cachekeywrappertest" title="Link to this heading"></a></h3>
-<p>Source: <a class="reference internal" href="#../memoize-runtime/src/test/java/dev/memoize/runtime/CacheKeyWrapperTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/test/java/dev/memoize/runtime/CacheKeyWrapperTest.java</span></code></span></a></p>
+<p>Source: <a class="reference internal" href="#../memoize-runtime/src/test/java/io/github/sanadlab/runtime/CacheKeyWrapperTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/test/java/io/github/sanadlab/runtime/CacheKeyWrapperTest.java</span></code></span></a></p>
 <p>Tests <code class="docutils literal notranslate"><span class="pre">CacheKeyWrapper</span></code> equality and hashing:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">emptyKeysShouldBeEqual</span></code> – <code class="docutils literal notranslate"><span class="pre">EMPTY</span></code> singleton equals new empty wrapper</p></li>
@@ -492,7 +500,7 @@
 </section>
 <section id="lrumemocachetest">
 <h3>LruMemoCacheTest<a class="headerlink" href="#lrumemocachetest" title="Link to this heading"></a></h3>
-<p>Source: <a class="reference internal" href="#../memoize-runtime/src/test/java/dev/memoize/runtime/LruMemoCacheTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/test/java/dev/memoize/runtime/LruMemoCacheTest.java</span></code></span></a></p>
+<p>Source: <a class="reference internal" href="#../memoize-runtime/src/test/java/io/github/sanadlab/runtime/LruMemoCacheTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/test/java/io/github/sanadlab/runtime/LruMemoCacheTest.java</span></code></span></a></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">basicGetPut</span></code> – Put and retrieve a value</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">evictsWhenOverMaxSize</span></code> – Adding 4th entry to size-3 cache evicts the oldest</p></li>
@@ -505,7 +513,7 @@
 </section>
 <section id="memodispatchertest">
 <h3>MemoDispatcherTest<a class="headerlink" href="#memodispatchertest" title="Link to this heading"></a></h3>
-<p>Source: <a class="reference internal" href="#../memoize-runtime/src/test/java/dev/memoize/runtime/MemoDispatcherTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/test/java/dev/memoize/runtime/MemoDispatcherTest.java</span></code></span></a></p>
+<p>Source: <a class="reference internal" href="#../memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoDispatcherTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoDispatcherTest.java</span></code></span></a></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cachesResultOnSecondCall</span></code> – Second call with same args returns cached value (compute called once)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">differentArgsMissCache</span></code> – Different args trigger recomputation</p></li>
@@ -522,7 +530,7 @@
 </section>
 <section id="memocachemanagertest">
 <h3>MemoCacheManagerTest<a class="headerlink" href="#memocachemanagertest" title="Link to this heading"></a></h3>
-<p>Source: <a class="reference internal" href="#../memoize-runtime/src/test/java/dev/memoize/runtime/MemoCacheManagerTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/test/java/dev/memoize/runtime/MemoCacheManagerTest.java</span></code></span></a></p>
+<p>Source: <a class="reference internal" href="#../memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoCacheManagerTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-runtime/src/test/java/io/github/sanadlab/runtime/MemoCacheManagerTest.java</span></code></span></a></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">invalidateAllClearsAllDispatchers</span></code> – Two dispatchers registered; <code class="docutils literal notranslate"><span class="pre">invalidateAll()</span></code> clears both</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">selectiveInvalidateClearsOnlySpecifiedDispatchers</span></code> – 3 dispatchers; invalidate 2, verify 3rd is untouched</p></li>
@@ -536,7 +544,7 @@
 <h2>Integration Tests<a class="headerlink" href="#integration-tests" title="Link to this heading"></a></h2>
 <section id="linkedlistmemotest">
 <h3>LinkedListMemoTest<a class="headerlink" href="#linkedlistmemotest" title="Link to this heading"></a></h3>
-<p>Source: <a class="reference internal" href="#../memoize-test-android/src/test/java/dev/memoize/test/LinkedListMemoTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-test-android/src/test/java/dev/memoize/test/LinkedListMemoTest.java</span></code></span></a></p>
+<p>Source: <a class="reference internal" href="#../memoize-test-android/src/test/java/io/github/sanadlab/test/LinkedListMemoTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-test-android/src/test/java/io/github/sanadlab/test/LinkedListMemoTest.java</span></code></span></a></p>
 <p>End-to-end tests using the annotated <code class="docutils literal notranslate"><span class="pre">LinkedList</span></code>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">searchReturnsCorrectResults</span></code> – Basic search correctness</p></li>
@@ -556,7 +564,7 @@
 </section>
 <section id="calculatortest-jvm">
 <h3>CalculatorTest (JVM)<a class="headerlink" href="#calculatortest-jvm" title="Link to this heading"></a></h3>
-<p>Source: <a class="reference internal" href="#../memoize-test-jvm/src/test/java/dev/memoize/testjvm/CalculatorTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-test-jvm/src/test/java/dev/memoize/testjvm/CalculatorTest.java</span></code></span></a></p>
+<p>Source: <a class="reference internal" href="#../memoize-test-jvm/src/test/java/io/github/sanadlab/testjvm/CalculatorTest.java"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-test-jvm/src/test/java/io/github/sanadlab/testjvm/CalculatorTest.java</span></code></span></a></p>
 <p>JVM-specific tests using a <code class="docutils literal notranslate"><span class="pre">Calculator</span></code> class with overloaded methods and thread safety options:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">basicMemoization</span></code> – Basic cache behavior on JVM</p></li>
@@ -573,7 +581,7 @@
 </section>
 <section id="stringprocessortest-kotlin-jvm">
 <h3>StringProcessorTest (Kotlin JVM)<a class="headerlink" href="#stringprocessortest-kotlin-jvm" title="Link to this heading"></a></h3>
-<p>Source: <a class="reference internal" href="#../memoize-test-kotlin-jvm/src/test/kotlin/dev/memoize/testkotlin/StringProcessorTest.kt"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-test-kotlin-jvm/src/test/kotlin/dev/memoize/testkotlin/StringProcessorTest.kt</span></code></span></a></p>
+<p>Source: <a class="reference internal" href="#../memoize-test-kotlin-jvm/src/test/kotlin/io/github/sanadlab/testkotlin/StringProcessorTest.kt"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-test-kotlin-jvm/src/test/kotlin/io/github/sanadlab/testkotlin/StringProcessorTest.kt</span></code></span></a></p>
 <p>Kotlin-specific integration tests using <code class="docutils literal notranslate"><span class="pre">StringProcessor</span></code> with Kotlin features:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">basicMemoization</span></code> – String reverse with prefix, same object reference on cache hit</p></li>
@@ -593,7 +601,7 @@
 </section>
 <section id="mathservicetest-kotlin-jvm">
 <h3>MathServiceTest (Kotlin JVM)<a class="headerlink" href="#mathservicetest-kotlin-jvm" title="Link to this heading"></a></h3>
-<p>Source: <a class="reference internal" href="#../memoize-test-kotlin-jvm/src/test/kotlin/dev/memoize/testkotlin/MathServiceTest.kt"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-test-kotlin-jvm/src/test/kotlin/dev/memoize/testkotlin/MathServiceTest.kt</span></code></span></a></p>
+<p>Source: <a class="reference internal" href="#../memoize-test-kotlin-jvm/src/test/kotlin/io/github/sanadlab/testkotlin/MathServiceTest.kt"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">memoize-test-kotlin-jvm/src/test/kotlin/io/github/sanadlab/testkotlin/MathServiceTest.kt</span></code></span></a></p>
 <p>Kotlin tests for auto-monitor, TTL, and stats:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">autoMonitorDisablesOnLowHitRate</span></code> – 10 unique fib calls → cache disabled → recomputation with changed multiplier</p></li>

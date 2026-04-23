@@ -11,7 +11,7 @@ runtime until you explicitly enable them.
 - `MemoMetrics` -- per-dispatcher compute / lookup nanos, estimated time saved
 - `MemoCacheManager.dumpReport()` / `logReport()` -- end-of-run summary
 
-Source: [`memoize-runtime/src/main/java/dev/memoize/runtime/`](https://github.com)
+Source: [`memoize-runtime/src/main/java/io/github/sanadlab/runtime/`](https://github.com)
 
 ## Why this lives inside the runtime
 
@@ -44,8 +44,8 @@ formatting, or sink dispatch happens.
 ## Enabling and routing
 
 ```java
-import dev.memoize.runtime.LogLevel;
-import dev.memoize.runtime.MemoLogger;
+import io.github.sanadlab.runtime.LogLevel;
+import io.github.sanadlab.runtime.MemoLogger;
 
 // Enable high-level lifecycle logging + timing metrics collection.
 MemoLogger.setLevel(LogLevel.INFO);

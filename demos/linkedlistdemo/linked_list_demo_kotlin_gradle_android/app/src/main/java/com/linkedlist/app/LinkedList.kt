@@ -1,7 +1,7 @@
 package com.linkedlist.app
 
-import dev.memoize.annotations.CacheInvalidate
-import dev.memoize.annotations.Memoize
+import io.github.sanadlab.annotations.CacheInvalidate
+import io.github.sanadlab.annotations.Memoize
 
 /**
  * LinkedList implementation with basic operations

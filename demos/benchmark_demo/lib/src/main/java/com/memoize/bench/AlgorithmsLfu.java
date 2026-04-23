@@ -1,7 +1,7 @@
 package com.memoize.bench;
 
-import dev.memoize.annotations.EvictionPolicy;
-import dev.memoize.annotations.Memoize;
+import io.github.sanadlab.annotations.EvictionPolicy;
+import io.github.sanadlab.annotations.Memoize;
 
 /**
  * LFU-memoized variant. Same shape as the LRU/FIFO siblings. Best-suited to

@@ -1,6 +1,6 @@
 package com.linkedlist.app;
 
-import dev.memoize.annotations.Memoize;
+import io.github.sanadlab.annotations.Memoize;
 
 /**
  * MEMOIZED version of the expensive-compute library. Every pure, deterministic

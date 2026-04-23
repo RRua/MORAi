@@ -1,8 +1,8 @@
-# MemoizeLib
+# MORAl
 
 **Annotation-based memoization library for Android and JVM**
 
-MemoizeLib lets you cache method results by adding a single `@Memoize` annotation. A Gradle plugin performs ASM bytecode transformation at build time to inject all cache mechanics transparently -- no call-site changes, no wrapper classes, no boilerplate.
+MORAl lets you cache method results by adding a single `@Memoize` annotation. A Gradle plugin performs ASM bytecode transformation at build time to inject all cache mechanics transparently -- no call-site changes, no wrapper classes, no boilerplate.
 
 ```java
 @Memoize(maxSize = 64)

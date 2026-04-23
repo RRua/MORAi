@@ -2,7 +2,7 @@
 
 This is the core mechanism that makes `@Memoize` transparent. The Gradle plugin transforms `.class` files at build time using ASM bytecode manipulation.
 
-Source: [`memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/`](https://github.com)
+Source: [`memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/`](https://github.com)
 
 ## Plugin Registration
 
@@ -61,8 +61,8 @@ override fun isInstrumentable(classData: ClassData): Boolean {
            !className.startsWith("androidx.") &&
            !className.startsWith("kotlin.") &&
            !className.startsWith("java.") &&
-           !className.startsWith("dev.memoize.runtime.") &&
-           !className.startsWith("dev.memoize.annotations.")
+           !className.startsWith("io.github.sanadlab.runtime.") &&
+           !className.startsWith("io.github.sanadlab.annotations.")
 }
 ```
 
@@ -98,7 +98,7 @@ for (method in classNode.methods) {
                          (method.invisibleAnnotations.orEmpty())
     for (ann in allAnnotations) {
         when (ann.desc) {
-            "Ldev/memoize/annotations/Memoize;" -> {
+            "Lio/github/sanadlab/annotations/Memoize;" -> {
                 // Read maxSize parameter
                 var maxSize = 128
                 if (ann.values != null) {
@@ -110,7 +110,7 @@ for (method in classNode.methods) {
                 }
                 memoizedMethods.add(MemoMethodInfo(method.name, method.desc, maxSize))
             }
-            "Ldev/memoize/annotations/CacheInvalidate;" -> {
+            "Lio/github/sanadlab/annotations/CacheInvalidate;" -> {
                 invalidateMethods.add(method.name)
             }
         }
@@ -128,17 +128,17 @@ For a class with `search(int)` (maxSize=64) and `length()` (maxSize=128) memoize
 // One MemoCacheManager field per class
 classNode.fields.add(FieldNode(
     ACC_PRIVATE | ACC_SYNTHETIC, "__memoCacheManager",
-    "Ldev/memoize/runtime/MemoCacheManager;", null, null
+    "Lio/github/sanadlab/runtime/MemoCacheManager;", null, null
 ))
 
 // One MemoDispatcher field per memoized method (with hash suffix)
 classNode.fields.add(FieldNode(
     ACC_PRIVATE | ACC_SYNTHETIC, "__memoDispatcher_search_297da",
-    "Ldev/memoize/runtime/MemoDispatcher;", null, null
+    "Lio/github/sanadlab/runtime/MemoDispatcher;", null, null
 ))
 classNode.fields.add(FieldNode(
     ACC_PRIVATE | ACC_SYNTHETIC, "__memoDispatcher_length_8aec2",
-    "Ldev/memoize/runtime/MemoDispatcher;", null, null
+    "Lio/github/sanadlab/runtime/MemoDispatcher;", null, null
 ))
 ```
 

@@ -7,8 +7,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import dev.memoize.runtime.LogLevel;
-import dev.memoize.runtime.MemoLogger;
+import io.github.sanadlab.runtime.LogLevel;
+import io.github.sanadlab.runtime.MemoLogger;
 
 /**
  * MEMOIZED twin of the baseline demo. Runs the exact same {@link Workload}, but

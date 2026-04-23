@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; MemoizeLib Documentation</title>
+  <title>API Reference &mdash; MORAl Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -34,7 +34,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            MemoizeLib
+            MORAl
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -51,7 +51,15 @@
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html#installation">Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-1-add-the-plugin-to-your-settings">Step 1: Add the plugin to your settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-2-apply-the-plugin-and-add-dependencies">Step 2: Apply the plugin and add dependencies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-3-annotate-your-methods">Step 3: Annotate your methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#the-minimal-pattern">3.1   The minimal pattern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#selective-full-flush-across-multiple-methods">3.2   Selective full-flush across multiple methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#single-entry-eviction-when-you-know-which-row-changed">3.3   Single-entry eviction when you know which row changed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#heterogeneous-targets-on-one-mutator">3.4   Heterogeneous targets on one mutator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#key-builders-with-ambient-extra-state">3.5   Key builders with ambient / extra state</a></li>
+<li class="toctree-l4"><a class="reference internal" href="getting-started.html#legacy-and-structured-can-be-combined">3.6   Legacy and structured can be combined</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="getting-started.html#step-4-build-and-verify">Step 4: Build and verify</a></li>
 </ul>
 </li>
@@ -312,14 +320,14 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#annotations">Annotations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#dev-memoize-annotations">dev.memoize.annotations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#io-github-sanadlab-annotations">io.github.sanadlab.annotations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#memoize-parameters">&#64;Memoize Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cacheinvalidate-parameters">&#64;CacheInvalidate Parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#enums">Enums</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#runtime-classes">Runtime Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#dev-memoize-runtime">dev.memoize.runtime</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#io-github-sanadlab-runtime">io.github.sanadlab.runtime</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#memodispatcher-methods">MemoDispatcher Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#memocachemanager-methods">MemoCacheManager Methods</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#cachestats-methods">CacheStats Methods</a></li>
@@ -342,7 +350,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">MemoizeLib</a>
+          <a href="index.html">MORAl</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -364,8 +372,8 @@
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
 <section id="annotations">
 <h2>Annotations<a class="headerlink" href="#annotations" title="Link to this heading"></a></h2>
-<section id="dev-memoize-annotations">
-<h3>dev.memoize.annotations<a class="headerlink" href="#dev-memoize-annotations" title="Link to this heading"></a></h3>
+<section id="io-github-sanadlab-annotations">
+<h3>io.github.sanadlab.annotations<a class="headerlink" href="#io-github-sanadlab-annotations" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Annotation</p></th>
@@ -482,8 +490,8 @@
 </section>
 <section id="runtime-classes">
 <h2>Runtime Classes<a class="headerlink" href="#runtime-classes" title="Link to this heading"></a></h2>
-<section id="dev-memoize-runtime">
-<h3>dev.memoize.runtime<a class="headerlink" href="#dev-memoize-runtime" title="Link to this heading"></a></h3>
+<section id="io-github-sanadlab-runtime">
+<h3>io.github.sanadlab.runtime<a class="headerlink" href="#io-github-sanadlab-runtime" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Class</p></th>
@@ -641,7 +649,7 @@
 <h2>Gradle Plugin<a class="headerlink" href="#gradle-plugin" title="Link to this heading"></a></h2>
 <section id="plugin-id">
 <h3>Plugin ID<a class="headerlink" href="#plugin-id" title="Link to this heading"></a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">id</span><span class="p">(</span><span class="s2">&quot;dev.memoize&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">id</span><span class="p">(</span><span class="s2">&quot;io.github.sanadlab&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -650,7 +658,7 @@
 <ul class="simple">
 <li><p><strong>Android projects</strong>: Registers <code class="docutils literal notranslate"><span class="pre">MemoizeClassVisitorFactory</span></code> via AGP Instrumentation API</p></li>
 <li><p><strong>JVM projects</strong>: Registers post-compilation task via <code class="docutils literal notranslate"><span class="pre">JvmBytecodeTransformer</span></code></p></li>
-<li><p>Scope: project classes only (skips <code class="docutils literal notranslate"><span class="pre">android.*</span></code>, <code class="docutils literal notranslate"><span class="pre">androidx.*</span></code>, <code class="docutils literal notranslate"><span class="pre">kotlin.*</span></code>, <code class="docutils literal notranslate"><span class="pre">java.*</span></code>, <code class="docutils literal notranslate"><span class="pre">dev.memoize.*</span></code>)</p></li>
+<li><p>Scope: project classes only (skips <code class="docutils literal notranslate"><span class="pre">android.*</span></code>, <code class="docutils literal notranslate"><span class="pre">androidx.*</span></code>, <code class="docutils literal notranslate"><span class="pre">kotlin.*</span></code>, <code class="docutils literal notranslate"><span class="pre">java.*</span></code>, <code class="docutils literal notranslate"><span class="pre">io.github.sanadlab.*</span></code>)</p></li>
 <li><p>All <code class="docutils literal notranslate"><span class="pre">&#64;Memoize</span></code> parameters are read and passed to <code class="docutils literal notranslate"><span class="pre">MemoDispatcher.create()</span></code></p></li>
 </ul>
 </section>
@@ -680,7 +688,7 @@
 </section>
 <section id="file-locations">
 <h2>File Locations<a class="headerlink" href="#file-locations" title="Link to this heading"></a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>memoize-annotations/src/main/java/dev/memoize/annotations/
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>memoize-annotations/src/main/java/io/github/sanadlab/annotations/
   ├── Memoize.java
   ├── CacheInvalidate.java
   ├── CacheKey.java
@@ -688,7 +696,7 @@
   ├── EvictionPolicy.java
   └── ThreadSafety.java
 
-memoize-runtime/src/main/java/dev/memoize/runtime/
+memoize-runtime/src/main/java/io/github/sanadlab/runtime/
   ├── MemoCache.java
   ├── LruMemoCache.java
   ├── UnsynchronizedLruMemoCache.java
@@ -698,11 +706,11 @@ memoize-runtime/src/main/java/dev/memoize/runtime/
   ├── MemoCacheManager.java
   └── CacheStats.java
 
-memoize-ksp/src/main/kotlin/dev/memoize/ksp/
+memoize-ksp/src/main/kotlin/io/github/sanadlab/ksp/
   ├── MemoizeProcessorProvider.kt
   └── MemoizeProcessor.kt
 
-memoize-gradle-plugin/src/main/kotlin/dev/memoize/plugin/
+memoize-gradle-plugin/src/main/kotlin/io/github/sanadlab/plugin/
   ├── MemoizePlugin.kt
   ├── MemoizeClassVisitorFactory.kt
   ├── MemoizeClassVisitor.kt

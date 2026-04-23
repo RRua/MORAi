@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    id("dev.memoize")
+    id("io.github.sanadlab")
 }
 
 android {
@@ -38,7 +38,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation("dev.memoize:memoize-annotations:0.1.0")
-    implementation("dev.memoize:memoize-runtime:0.1.0")
+    implementation("io.github.sanadlab:memoize-annotations:0.1.0")
+    implementation("io.github.sanadlab:memoize-runtime:0.1.0")
     testImplementation(libs.junit)
 }

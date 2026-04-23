@@ -1,5 +1,5 @@
 pluginManagement {
-    includeBuild("../../memoize-lib")
+    includeBuild("../../MORAl")
     repositories {
         google {
             content {

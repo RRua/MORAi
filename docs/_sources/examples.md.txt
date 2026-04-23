@@ -5,7 +5,7 @@
 ### Simple Pure Function
 
 ```java
-import dev.memoize.annotations.Memoize;
+import io.github.sanadlab.annotations.Memoize;
 
 public class MathUtils {
 
@@ -22,8 +22,8 @@ The recursive calls will hit the cache, turning O(2^n) into O(n).
 ### Query Method with Full Invalidation
 
 ```java
-import dev.memoize.annotations.Memoize;
-import dev.memoize.annotations.CacheInvalidate;
+import io.github.sanadlab.annotations.Memoize;
+import io.github.sanadlab.annotations.CacheInvalidate;
 
 public class LinkedList {
     private Node head;
@@ -78,8 +78,8 @@ list.length()         // MISS -> re-counts -> returns 3 -> caches
 When a class has many memoized methods and you know a mutation only affects specific caches, use selective invalidation to avoid unnecessarily clearing unrelated caches:
 
 ```java
-import dev.memoize.annotations.Memoize;
-import dev.memoize.annotations.CacheInvalidate;
+import io.github.sanadlab.annotations.Memoize;
+import io.github.sanadlab.annotations.CacheInvalidate;
 
 public class DocumentStore {
 
@@ -149,8 +149,8 @@ store.getUserPrefs()    // HIT -> still cached!
 Overloaded methods are fully supported. Each overload gets its own independent cache:
 
 ```java
-import dev.memoize.annotations.Memoize;
-import dev.memoize.annotations.CacheInvalidate;
+import io.github.sanadlab.annotations.Memoize;
+import io.github.sanadlab.annotations.CacheInvalidate;
 
 public class Calculator {
     private int base = 0;
@@ -189,8 +189,8 @@ When `@CacheInvalidate("compute")` is used, **all overloads** matching the name 
 Choose the right synchronization strategy based on your access pattern:
 
 ```java
-import dev.memoize.annotations.Memoize;
-import dev.memoize.annotations.ThreadSafety;
+import io.github.sanadlab.annotations.Memoize;
+import io.github.sanadlab.annotations.ThreadSafety;
 
 public class Processor {
 
@@ -222,8 +222,8 @@ After 30 seconds, cached entries are considered expired and recomputed on the ne
 ## Kotlin Example
 
 ```kotlin
-import dev.memoize.annotations.Memoize
-import dev.memoize.annotations.CacheInvalidate
+import io.github.sanadlab.annotations.Memoize
+import io.github.sanadlab.annotations.CacheInvalidate
 
 class UserRepository(private val db: Database) {
 
@@ -329,7 +329,7 @@ Enable auto-monitoring to automatically disable caches that aren't performing we
 ### Basic Auto-Monitor
 
 ```java
-import dev.memoize.annotations.Memoize;
+import io.github.sanadlab.annotations.Memoize;
 
 public class SearchService {
 
@@ -392,8 +392,8 @@ The library has been applied to three demo applications in the project:
 **File:** `linkedlistdemo/linked_list_demo_java_gradle_android/app/src/main/java/com/linkedlist/app/LinkedList.java`
 
 ```java
-import dev.memoize.annotations.CacheInvalidate;
-import dev.memoize.annotations.Memoize;
+import io.github.sanadlab.annotations.CacheInvalidate;
+import io.github.sanadlab.annotations.Memoize;
 
 public class LinkedList implements Iterable<Node> {
     private Node head;
@@ -420,8 +420,8 @@ public class LinkedList implements Iterable<Node> {
 **File:** `linkedlistdemo/linked_list_demo_kotlin_gradle_android/app/src/main/java/com/linkedlist/app/LinkedList.kt`
 
 ```kotlin
-import dev.memoize.annotations.CacheInvalidate
-import dev.memoize.annotations.Memoize
+import io.github.sanadlab.annotations.CacheInvalidate
+import io.github.sanadlab.annotations.Memoize
 
 class LinkedList : Iterable<Node> {
     private var head: Node? = null
